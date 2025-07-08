@@ -43,12 +43,12 @@ const ResultController = () => {
 
     const getResponse = async () => {
         // Comprobamos resultado de la partida
-        const allPlayersS = await playersService.getListPlayers();
-        const allPlayers: JugadorInterface[] = allPlayersS.docs
-        .map((doc) => doc.data())
-        .filter((data) => data.partida == partida) as JugadorInterface[];
-
-        const allResponse = allPlayers.map((player) => {
+        // const allPlayersS = await playersService.getListPlayers();
+        // const allPlayers: JugadorInterface[] = allPlayersS.docs
+        // .map((doc) => doc.data())
+        // .filter((data) => data.partida == partida) as JugadorInterface[];
+        const allPlayers:any = []
+        const allResponse = allPlayers.map((player:any) => {
             return player.respuesta;
         });
 

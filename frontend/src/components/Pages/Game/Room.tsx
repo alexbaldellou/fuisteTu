@@ -1,45 +1,45 @@
 import { useEffect, useState } from "react";
-import { gameService, playersService } from "../../../services/allService";
-import Questions from "./Questions/Questions";
-import CountDown from "./CountDown/CountDown";
-import { useNavigate, useParams } from "react-router-dom";
-import FinishGame from "./FinishGame/FinishGame";
-import ResponseChooseQuestion from "./Questions/TypeQuestions/ResponseQuestion/ResponseChooseQuestion";
+// import { gameService, playersService } from "../../../services/allService";
+// import Questions from "./Questions/Questions";
+// import CountDown from "./CountDown/CountDown";
+// import { useParams } from "react-router-dom";
+// import FinishGame from "./FinishGame/FinishGame";
+// import ResponseChooseQuestion from "./Questions/TypeQuestions/ResponseQuestion/ResponseChooseQuestion";
 import { getQuestionsRandom, getRandomInt } from "../../Utils";
 
 import quienEsMasProbable from "../../../assets/questions/quienesmasprobable.json";
 import siJugador from "../../../assets/questions/sijugador.json";
 
 const Room = () => {
-  const user = localStorage.getItem("id");
-  const navigate = useNavigate();
-  const { partida } = useParams();
-  const [listPlayer, setLisPlayer] = useState<any>([]);
-  const [timeOut, setTimeOut] = useState<boolean>(false);
-  const [response, setResponse] = useState<any>();
-  const [chooseResponse, setChooseResponse] = useState<boolean>(false);
-  const [question, setQuestion] = useState<any>();
-  const [questionRandom, setQuestionRandom] = useState<any>([]);
-  const [indexQuestion, setIndexQuestion] = useState<number>(0);
+  // const user = localStorage.getItem("id");
+  // const navigate = useNavigate();
+  // const { partida } = useParams();
+  // const [listPlayer, setLisPlayer] = useState<any>([]);
+  // const [timeOut, setTimeOut] = useState<boolean>(false);
+  // const [response, setResponse] = useState<any>();
+  // const [chooseResponse, setChooseResponse] = useState<boolean>(false);
+  // const [question, setQuestion] = useState<any>();
+  // const [questionRandom, setQuestionRandom] = useState<any>([]);
+  // const [indexQuestion, setIndexQuestion] = useState<number>(0);
   const [finish, setFinish] = useState<boolean>(false);
 
   useEffect(() => {
-    getListPlayers();
+    // getListPlayers();
     getListQuestion();
   }, []);
 
-  useEffect(() => {
-    if (response && timeOut) {
-      sendResponse(response);
-    }
-  }, [response, timeOut]);
+  // useEffect(() => {
+  //   if (response && timeOut) {
+  //     sendResponse(response);
+  //   }
+  // }, [response, timeOut]);
 
-  const getListPlayers = async () => {
-    const list = (await playersService.getListPlayers(partida || "")).docs.map(
-      (doc) => doc.data()
-    );
-    setLisPlayer(list);
-  };
+  // const getListPlayers = async () => {
+  //   const list = (await playersService.getListPlayers(partida || "")).docs.map(
+  //     (doc) => doc.data()
+  //   );
+  //   setLisPlayer(list);
+  // };
 
   const getListQuestion = async () => {
     const questionsListWho = getQuestionsRandom(quienEsMasProbable.preguntas);
@@ -50,45 +50,47 @@ const Room = () => {
       setFinish(true);
     }
     const numRandom = getRandomInt(list.length);
-    setQuestionRandom(list.find((_, i) => i === numRandom));
-    setIndexQuestion(getRandomInt(list.length));
+    console.log(numRandom);
+    // setQuestionRandom(list.find((_, i) => i === numRandom));
+    // setIndexQuestion(getRandomInt(list.length));
   };
 
   //TODO: SABER SI ES QUIEN SERIA O RESPUESTA
-  const sendResponse = (resp: any) => {
-    if (user && resp) {
-      setStatusQuestion();
-      switch (resp.type) {
-        case "QUIEN_SERIA":
-          sendResponseWhoIsPlayer(user, resp);
-          break;
-        case "RESPUESTA":
-          sendResponseResp(user, resp);
-          break;
-      }
-    }
-  };
+  // const sendResponse = (resp: any) => {
+  //   if (user && resp) {
+  //     setStatusQuestion();
+  //     switch (resp.type) {
+  //       case "QUIEN_SERIA":
+  //         sendResponseWhoIsPlayer(user, resp);
+  //         break;
+  //       case "RESPUESTA":
+  //         sendResponseResp(user, resp);
+  //         break;
+  //     }
+  //   }
+  // };
 
-  const sendResponseWhoIsPlayer = (user: any, resp: string) => {
-    playersService.setChooseJugador(user, { respuesta: resp });
-    navigate(`/resultado/${partida}`);
-  };
+  // const sendResponseWhoIsPlayer = (user: any, resp: string) => {
+  //   playersService.setChooseJugador(user, { respuesta: resp });
+  //   navigate(`/resultado/${partida}`);
+  // };
 
-  const sendResponseResp = (user: any, resp: string) => {
-    playersService.setChooseJugador(user, { respuesta: resp });
-    setChooseResponse(true);
-    navigate(`/resultado/${partida}`);
-  };
+  // const sendResponseResp = (user: any, resp: string) => {
+  //   playersService.setChooseJugador(user, { respuesta: resp });
+  //   setChooseResponse(true);
+  //   navigate(`/resultado/${partida}`);
+  // };
 
-  const setStatusQuestion = async () => {
-    if (question.id) {
-      await gameService.updateQuestion(question.id, { activo: false });
-    }
-  };
+  // const setStatusQuestion = async () => {
+  //   if (question.id) {
+  //     await gameService.updateQuestion(question.id, { activo: false });
+  //   }
+  // };
 
   return (
     <>
-      {finish ? (
+      <p>ajsdso</p>
+      {/* {finish ? (
         <FinishGame />
       ) : !chooseResponse ? (
         <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
@@ -105,7 +107,7 @@ const Room = () => {
         </div>
       ) : (
         <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
-          <CountDown seconds={15} onTimeOut={setTimeOut} />
+       <CountDown seconds={15} onTimeOut={setTimeOut} />
           <ResponseChooseQuestion partida={partida} />
           <Questions
             players={listPlayer}
@@ -116,9 +118,9 @@ const Room = () => {
             question={questionRandom}
             numRandom={indexQuestion}
             // finishGame={setFinish}
-          />
+          /> 
         </div>
-      )}
+      )} */}
     </>
   );
 };

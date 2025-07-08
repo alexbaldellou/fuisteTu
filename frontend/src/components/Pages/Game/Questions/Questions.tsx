@@ -1,27 +1,27 @@
-import { useEffect, useState } from "react";
-import WhoIsQuestion from "./TypeQuestions/WhoIsQuestion";
-import ResponseQuestion from "./TypeQuestions/ResponseQuestion/ResponseQuestion";
+// import { useEffect, useState } from "react";
+// import WhoIsQuestion from "./TypeQuestions/WhoIsQuestion";
+// import ResponseQuestion from "./TypeQuestions/ResponseQuestion/ResponseQuestion";
 
-interface QuestionsProps {
-  players: [];
-  timeOut: boolean;
-  numRandom?: number;
-  game: string | undefined;
-  question: string;
-  onResponse: (resp: any) => void;
-  questionChoose?: (resp: any) => void;
-}
+// interface QuestionsProps {
+//   players: [];
+//   timeOut: boolean;
+//   numRandom?: number;
+//   game: string | undefined;
+//   question: string;
+//   onResponse: (resp: any) => void;
+//   questionChoose?: (resp: any) => void;
+// }
 
-const Questions = (props: QuestionsProps) => {
-  const { players, timeOut, game, onResponse, question } = props;
+const Questions = () => {
+  // const { players, timeOut, game, onResponse, question } = props;
 
-  const typeUser = localStorage.getItem("typeUser");
-  const [choosePlayer, setChoosePlayer] = useState<string>("");
-  const [respChoose, setRespChoose] = useState<string>("");
-  const [typeQuestion, setTypeQuestion] = useState<string>("");
-  const nameRandom = players[Math.floor(Math.random() * players.length)];
-  console.log("typeUser", typeUser);
-  console.log("players", players);
+  // const typeUser = localStorage.getItem("typeUser");
+  // const [choosePlayer, setChoosePlayer] = useState<string>("");
+  // const [respChoose, setRespChoose] = useState<string>("");
+  // const [typeQuestion, setTypeQuestion] = useState<string>("");
+  // const nameRandom = players[Math.floor(Math.random() * players.length)];
+  // console.log("typeUser", typeUser);
+  // console.log("players", players);
   // useEffect(() => {
   //   if ((choosePlayer || respChoose) && timeOut) {
   //     if (choosePlayer) {
@@ -36,8 +36,8 @@ const Questions = (props: QuestionsProps) => {
 
   return (
     <div className="bg-white/10 border-white/10 shadow-sm w-9/12 rounded-3xl">
-      <form className="flex flex-col justify-center gap-4 items-center my-10">
-        {question.includes("%jugador%") ? (
+      {/* <form className="flex flex-col justify-center gap-4 items-center my-10"> */}
+      {/* {question.includes("%jugador%") ? (
           <ResponseQuestion
             question={question || ""}
             onChooseResp={setRespChoose}
@@ -49,8 +49,9 @@ const Questions = (props: QuestionsProps) => {
             playerList={players}
             onChoosePlayer={setChoosePlayer}
           />
-        )}
-      </form>
+        )} */}
+      {/* </form> */}
+      <p>questions</p>
     </div>
   );
 };
