@@ -4,7 +4,7 @@ export default class gameServices {
   url: string;
 
   constructor() {
-    this.url = "https://juego-indol.vercel.app";
+    this.url = "https://fuiste-tu-b8o4.vercel.app";
     // this.url = "http://localhost";
   }
 
