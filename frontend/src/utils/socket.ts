@@ -1,6 +1,6 @@
 
 import { io } from "socket.io-client";
-const socket = io("https://fuiste-tu-b8o4.vercel.app:3000", {
+const socket = io("https://fuistetuback.onrender.com", {
     transports: ['websocket'], // forzar WebSocket
   withCredentials: true,
 }); // o tu backend
