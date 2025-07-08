@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server/index.js --ignore frontend"
+    "dev": "nodemon server/index.js --ignore frontend",
+    "start": "node server"
   },
   "keywords": [],
   "author": "",
