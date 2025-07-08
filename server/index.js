@@ -1,10 +1,21 @@
 import express from 'express'
 import http from 'http'
 import { Server as SocketServer } from 'socket.io'
-
+import cors from 'cors';
 const app = express()
 const server = http.createServer(app)
 const io = new SocketServer(server)
+
+
+app.use(cors({
+  origin: "*", // o tu frontend en producción
+  methods: ["GET", "POST"],
+//   credentials: true,
+}));
+
+app.get("/", (req, res) => {
+  res.send("Servidor Socket.IO funcionando 🚀");
+});
 
 const rooms = {};
 
@@ -50,6 +61,7 @@ io.on('connection', socket =>{
     });
 })
 
-
-server.listen(3000)
-console.log(`server port 3000`)
+const PORT = process.env.PORT || 3000
+server.listen(PORT, () => {
+  console.log("Servidor corriendo en puerto", PORT);
+})
