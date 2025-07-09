@@ -9,7 +9,7 @@ const AppRouter = () => {
   //:host en locura?
   return (
     <Routes>
-      <Route path="/partida/:id" element={<Home />} />
+      <Route path="/partida/:id/:typePlayer" element={<Home />} />
       <Route path="/registro/:partida" element={<Player />} />
       {/* <Route path="/locura/:partida/" element={<Game />} /> */}
       <Route path="/sala/:partida/" element={<Room />} />

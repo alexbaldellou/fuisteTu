@@ -25,8 +25,6 @@ export const RegisterPlayer = (props: LoginPlayerInter) => {
   useEffect(() => {
     if (jugador.nombre) {
       dispatch(addUser(jugador));
-      localStorage.setItem("id", jugador.id);
-      localStorage.setItem("typeUser", "player");
       if (onChangePlayer) {
         onChangePlayer(jugador);
       }

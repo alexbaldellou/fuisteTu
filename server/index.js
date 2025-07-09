@@ -22,10 +22,10 @@ const rooms = {};
 io.on('connection', socket =>{
     console.log('client connected', socket.id)
     
-    socket.on('getPlayersInRoom', (roomId) => {
-    const players = rooms[roomId]?.players || {};
-    socket.emit('playersInRoom', Object.values(players));
-    });
+    // socket.on('getPlayersInRoom', (roomId) => {
+    //   const players = rooms[roomId]?.players || {};
+    //   socket.emit('playersInRoom', Object.values(players));
+    // });
 
     socket.on('register', ( player ) => {
 
@@ -47,6 +47,14 @@ io.on('connection', socket =>{
         io.to(player.partidaId).emit('playersInRoom', Object.values(rooms[player.partidaId].players));
 
     });
+
+    socket.on('startGame', ( partida, isStart ) => {
+        if (isStart) {
+          io.to(partida).emit('isStartGame', isStart);
+        }
+        console.log(`Empieza la partida en la sala: ${partida}`);
+    });
+
 
     socket.on('disconnect', () => {
         for (const roomId in rooms) {

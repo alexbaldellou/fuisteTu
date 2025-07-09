@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 // import { gameService, playersService } from "../../../services/allService";
-// import Questions from "./Questions/Questions";
-// import CountDown from "./CountDown/CountDown";
-// import { useParams } from "react-router-dom";
+import Questions from "./Questions/Questions";
+import CountDown from "./CountDown/CountDown";
+import { useParams } from "react-router-dom";
 // import FinishGame from "./FinishGame/FinishGame";
 // import ResponseChooseQuestion from "./Questions/TypeQuestions/ResponseQuestion/ResponseChooseQuestion";
 import { getQuestionsRandom, getRandomInt } from "../../Utils";
@@ -10,22 +10,47 @@ import { getQuestionsRandom, getRandomInt } from "../../Utils";
 import quienEsMasProbable from "../../../assets/questions/quienesmasprobable.json";
 import siJugador from "../../../assets/questions/sijugador.json";
 
+import socket from "../../../utils/socket";
+
 const Room = () => {
   // const user = localStorage.getItem("id");
   // const navigate = useNavigate();
-  // const { partida } = useParams();
+  const { partida } = useParams();
   // const [listPlayer, setLisPlayer] = useState<any>([]);
-  // const [timeOut, setTimeOut] = useState<boolean>(false);
-  // const [response, setResponse] = useState<any>();
+  const [timeOut, setTimeOut] = useState<boolean>(false);
+  const [response, setResponse] = useState<any>();
   // const [chooseResponse, setChooseResponse] = useState<boolean>(false);
-  // const [question, setQuestion] = useState<any>();
-  // const [questionRandom, setQuestionRandom] = useState<any>([]);
-  // const [indexQuestion, setIndexQuestion] = useState<number>(0);
+  const [question, setQuestion] = useState<any>();
+  const [questionRandom, setQuestionRandom] = useState<any>([]);
+  const [indexQuestion, setIndexQuestion] = useState<number>(0);
+  const [players, setPlayers] = useState<any>([]);
+  // const [isStartGame, setIsStartGame] = useState<boolean>(false);
   const [finish, setFinish] = useState<boolean>(false);
 
   useEffect(() => {
     // getListPlayers();
     getListQuestion();
+  }, []);
+
+  useEffect(() => {
+    if (!partida) return;
+
+    const handleUpdate = (playersList: any) => {
+      setPlayers(playersList);
+    };
+
+    socket.on("playersInRoom", handleUpdate);
+
+    // const handleIsStartGame = (isStart: any) => {
+    //   setIsStartGame(isStart);
+    // };
+
+    // socket.on("isStartGame", handleIsStartGame);
+
+    // return () => {
+    //   socket.off("playersInRoom", handleUpdate);
+    //   socket.off("isStartGame", handleIsStartGame);
+    // };
   }, []);
 
   // useEffect(() => {
@@ -51,8 +76,8 @@ const Room = () => {
     }
     const numRandom = getRandomInt(list.length);
     console.log(numRandom);
-    // setQuestionRandom(list.find((_, i) => i === numRandom));
-    // setIndexQuestion(getRandomInt(list.length));
+    setQuestionRandom(list.find((_, i) => i === numRandom));
+    setIndexQuestion(getRandomInt(list.length));
   };
 
   //TODO: SABER SI ES QUIEN SERIA O RESPUESTA
@@ -87,9 +112,24 @@ const Room = () => {
   //   }
   // };
 
+  console.log("question", question);
+  console.log("response", response);
+  console.log("players", players);
   return (
     <>
-      <p>ajsdso</p>
+      <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
+        <CountDown seconds={15} onTimeOut={setTimeOut} />
+        <Questions
+          players={players}
+          timeOut={timeOut}
+          onResponse={setResponse}
+          game={partida}
+          numRandom={indexQuestion}
+          question={questionRandom}
+          questionChoose={setQuestion}
+        />
+      </div>
+      {/* <p>ajsdso</p> */}
       {/* {finish ? (
         <FinishGame />
       ) : !chooseResponse ? (
