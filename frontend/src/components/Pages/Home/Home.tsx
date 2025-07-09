@@ -26,6 +26,7 @@ const Home = () => {
 
   useEffect(() => {
     if (typePlayer) {
+      console.log(id);
       console.log(typePlayer);
     }
   }, [typePlayer]);
@@ -55,7 +56,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (isSave) {
+    if (isSave && id && jugador) {
       console.log("Nuevo registro");
       socket.emit("register", { id, jugador });
     }

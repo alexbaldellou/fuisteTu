@@ -28,9 +28,10 @@ io.on('connection', socket =>{
     // });
 
     socket.on('register', ( player ) => {
-
-        if (!rooms[player.partidaId]) {
-        rooms[player.partidaId] = {
+      const partida = player.id;
+      console.log('player', player)
+        if (!rooms[partida]) {
+        rooms[partida] = {
             players: {},
             currentQuestionIndex: 0,
             answers: {},
@@ -38,21 +39,22 @@ io.on('connection', socket =>{
         }
         
 
-        socket.join(player.partidaId);
+        socket.join(partida);
 
-        rooms[player.partidaId].players[socket.id] = {...player.jugador, id: socket.id} ;
-        console.log(`${player.jugador.nombre} se unió a la sala ${player.partidaId}`);
+        rooms[partida].players[socket.id] = {...player.jugador, id: socket.id} ;
+        console.log(`${player.jugador.nombre} se unió a la sala ${partida}`);
 
         // Avisar a todos en la sala
-        io.to(player.partidaId).emit('playersInRoom', Object.values(rooms[player.partidaId].players));
+        io.to(partida).emit('playersInRoom', Object.values(rooms[partida].players));
 
     });
 
-    socket.on('startGame', ( partida, isStart ) => {
-        if (isStart) {
-          io.to(partida).emit('isStartGame', isStart);
+    socket.on('startGame', ( info ) => {
+      console.log('info',info)
+        if (info.status) {
+          io.to(info.id).emit('isStartGame', info.status);
         }
-        console.log(`Empieza la partida en la sala: ${partida}`);
+        console.log(`Empieza la partida en la sala: ${info.id}`);
     });
 
 
