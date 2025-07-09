@@ -63,7 +63,7 @@ const Home = () => {
 
   const empezarPartida = () => {
     if (id) {
-      socket.emit("startGame", true);
+      socket.emit("startGame", { id: id, status: true });
       // navigate(`/sala/${id}`);
     }
   };
