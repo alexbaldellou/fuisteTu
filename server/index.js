@@ -21,11 +21,6 @@ const rooms = {};
 
 io.on('connection', socket =>{
     console.log('client connected', socket.id)
-    
-    // socket.on('getPlayersInRoom', (roomId) => {
-    //   const players = rooms[roomId]?.players || {};
-    //   socket.emit('playersInRoom', Object.values(players));
-    // });
 
     socket.on('register', ( player ) => {
       const partida = player.id;
@@ -37,7 +32,6 @@ io.on('connection', socket =>{
             answers: {},
         };
         }
-        
 
         socket.join(partida);
 
@@ -50,13 +44,23 @@ io.on('connection', socket =>{
     });
 
     socket.on('startGame', ( info ) => {
-      console.log('info',info)
         if (info.status) {
           io.to(info.id).emit('isStartGame', info.status);
         }
         console.log(`Empieza la partida en la sala: ${info.id}`);
     });
 
+    socket.on('questionsList', ( info ) => {
+        if (info) {
+          io.to(info.partida).emit('getQuestionsList', info.list);
+        }
+    });
+
+    socket.on('questionChoose', ( info ) => {
+        if (info) {
+          io.to(info.partida).emit('questionStart', info.numRandom);
+        }
+    });
 
     socket.on('disconnect', () => {
         for (const roomId in rooms) {

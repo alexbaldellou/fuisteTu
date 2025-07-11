@@ -6,22 +6,20 @@ interface QuestionsProps {
   players: [];
   timeOut: boolean;
   numRandom?: number;
-  game: string | undefined;
-  question: string;
+  questionId: number;
+  questionsList: any[];
   onResponse: (resp: any) => void;
   questionChoose?: (resp: any) => void;
 }
 
 const Questions = (props: QuestionsProps) => {
-  const { players, timeOut, game, onResponse, question } = props;
+  const { players, timeOut, onResponse, questionId, questionsList } = props;
 
-  const typeUser = localStorage.getItem("typeUser");
   const [choosePlayer, setChoosePlayer] = useState<string>("");
   const [respChoose, setRespChoose] = useState<string>("");
-  // const [typeQuestion, setTypeQuestion] = useState<string>("");
   const nameRandom = players[Math.floor(Math.random() * players.length)];
-  console.log("typeUser", typeUser);
-  console.log("players", players);
+  const [question, setQuestion] = useState<string>("");
+
   useEffect(() => {
     if ((choosePlayer || respChoose) && timeOut) {
       if (choosePlayer) {
@@ -34,7 +32,12 @@ const Questions = (props: QuestionsProps) => {
     }
   }, [choosePlayer, timeOut, respChoose]);
 
-  console.log("game", game);
+  useEffect(() => {
+    if (questionId && questionsList.length > 0) {
+      setQuestion(questionsList.find((_, i) => i === questionId));
+    }
+  }, [questionId, questionsList]);
+
   return (
     <div className="bg-white/10 border-white/10 shadow-sm w-9/12 rounded-3xl">
       <form className="flex flex-col justify-center gap-4 items-center my-10">
@@ -52,7 +55,6 @@ const Questions = (props: QuestionsProps) => {
           />
         )}
       </form>
-      <p>questions</p>
     </div>
   );
 };

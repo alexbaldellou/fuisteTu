@@ -26,9 +26,16 @@ const CountDown = (props: CountDownProps) => {
 
   return (
     <div>
-      <Card className="w-[240px] h-[240px] shadow-none bg-transparent">
-        <CardBody className="justify-center items-center pb-0">
+      <Card
+        className="w-[240px] h-[240px] shadow-none bg-transparent"
+        aria-label="Iniciar temporizador"
+      >
+        <CardBody
+          className="justify-center items-center pb-0"
+          aria-label="Iniciar temporizador"
+        >
           <CircularProgress
+            aria-label="Iniciar temporizador"
             classNames={{
               svg: "w-40 h-40 drop-shadow-md",
               indicator: "stroke-white",

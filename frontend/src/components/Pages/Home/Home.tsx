@@ -20,7 +20,7 @@ const Home = () => {
 
   useEffect(() => {
     if (id) {
-      setUrl(`${urlDefault}/partida/${id}`);
+      setUrl(`${urlDefault}/partida/${id}/jugador`);
     }
   }, [id]);
 
