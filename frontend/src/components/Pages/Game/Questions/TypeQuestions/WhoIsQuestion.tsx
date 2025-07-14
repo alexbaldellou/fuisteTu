@@ -8,6 +8,7 @@ interface WhoIsQuestionProps {
 
 const WhoIsQuestion = (props: WhoIsQuestionProps) => {
   const { question, playerList, onChoosePlayer } = props;
+  console.log("playerList", playerList);
   console.log("question who", question);
   return (
     <div key={Math.random()}>

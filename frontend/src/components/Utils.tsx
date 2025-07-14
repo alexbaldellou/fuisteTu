@@ -41,3 +41,7 @@ export const getQuestionsRandom = (questions: any) => {
   const barajadas = [...questions].sort(() => 0.5 - Math.random());
   return barajadas.slice(0, 30);
 };
+
+export const getNameRandom = (players: any[]) => {
+  return players[Math.floor(Math.random() * players.length)];
+};

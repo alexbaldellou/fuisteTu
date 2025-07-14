@@ -1,14 +1,9 @@
 import { Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
-interface nameRandomInterface {
-  nombre: string;
-  partida: string;
-  puntos: number;
-  id: string;
-}
+
 interface ResponseQuestionProps {
   question: string;
-  nameRandom: nameRandomInterface;
+  nameRandom: string;
   onChooseResp: (e: string) => void;
 }
 const ResponseQuestion = (props: ResponseQuestionProps) => {
@@ -19,9 +14,10 @@ const ResponseQuestion = (props: ResponseQuestionProps) => {
 
   useEffect(() => {
     if (nameRandom) {
-      setResp(question.replace("%jugador%", nameRandom.nombre));
+      setResp(question.replace("%jugador%", nameRandom));
     }
   }, [nameRandom]);
+
   return (
     <div>
       <h3 className="text-white font-bold text-3xl text-center my-10">
@@ -37,6 +33,7 @@ const ResponseQuestion = (props: ResponseQuestionProps) => {
             classNames={{
               label: "text-black/10 text-2xl",
               input: [
+                "w-full",
                 "bg-transparent",
                 "text-black/40 text-1xl",
                 "placeholder:text-default-700/50  text-1xl",

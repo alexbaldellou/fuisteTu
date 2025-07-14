@@ -43,6 +43,12 @@ io.on('connection', socket =>{
 
     });
 
+    socket.on('playersList', ( info ) => {
+        if (info && rooms[info.partida]) {
+          io.to(info.partida).emit('getPlayersList', Object.values(rooms[info.partida].players));
+        }
+    });
+
     socket.on('startGame', ( info ) => {
         if (info.status) {
           io.to(info.id).emit('isStartGame', info.status);
@@ -50,14 +56,27 @@ io.on('connection', socket =>{
         console.log(`Empieza la partida en la sala: ${info.id}`);
     });
 
+    socket.on('nameRandom', ( info ) => {
+        if (info) {
+          io.to(info.partida).emit('getNameRandom', info.numRandom);
+        }
+    });
+
     socket.on('questionsList', ( info ) => {
         if (info) {
+          console.log('rooms[partida].players[socket.id]', rooms[info.partida].players)
           io.to(info.partida).emit('getQuestionsList', info.list);
         }
     });
 
     socket.on('questionChoose', ( info ) => {
         if (info) {
+          io.to(info.partida).emit('questionStart', info.numRandom);
+        }
+    });
+    socket.on('saveResp', ( info ) => {
+        if (info) {
+          rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], respuestas: info.respuesta} ;
           io.to(info.partida).emit('questionStart', info.numRandom);
         }
     });

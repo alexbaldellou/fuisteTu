@@ -6,6 +6,7 @@ import { urlDefault } from "../../../config";
 import { RegisterPlayer } from "../Player/RegisterPlayer";
 import socket from "../../../utils/socket";
 import { JugadorInterface } from "../../../Interface/JugadorInterface";
+import { getNameRandom } from "../../Utils";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -23,13 +24,6 @@ const Home = () => {
       setUrl(`${urlDefault}/partida/${id}/jugador`);
     }
   }, [id]);
-
-  useEffect(() => {
-    if (typePlayer) {
-      console.log(id);
-      console.log(typePlayer);
-    }
-  }, [typePlayer]);
 
   useEffect(() => {
     if (!id) return;
@@ -64,8 +58,9 @@ const Home = () => {
 
   const empezarPartida = () => {
     if (id) {
+      const nameRandom = getNameRandom(players);
       socket.emit("startGame", { id: id, status: true });
-      // navigate(`/sala/${id}`);
+      socket.emit("nameRandom", { id, nameRandom });
     }
   };
 
