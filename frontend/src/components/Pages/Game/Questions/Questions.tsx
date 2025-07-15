@@ -10,7 +10,6 @@ interface QuestionsProps {
   questionId: number;
   questionsList: any[];
   onResponse: (resp: any) => void;
-  questionChoose?: (resp: any) => void;
 }
 
 const Questions = (props: QuestionsProps) => {
@@ -71,6 +70,7 @@ const Questions = (props: QuestionsProps) => {
           />
         ) : (
           <WhoIsQuestion
+            key={Math.random()}
             question={question || ""}
             playerList={players}
             onChoosePlayer={setChoosePlayer}

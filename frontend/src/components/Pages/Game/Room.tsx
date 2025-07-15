@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import Questions from "./Questions/Questions";
 import CountDown from "./CountDown/CountDown";
 import { useParams, useNavigate } from "react-router-dom";
-// import FinishGame from "./FinishGame/FinishGame";
-// import ResponseChooseQuestion from "./Questions/TypeQuestions/ResponseQuestion/ResponseChooseQuestion";
 import { getNameRandom, getQuestionsRandom, getRandomInt } from "../../Utils";
 
 import quienEsMasProbable from "../../../assets/questions/quienesmasprobable.json";
@@ -16,7 +14,6 @@ const Room = () => {
   const navigate = useNavigate();
   const [timeOut, setTimeOut] = useState<boolean>(false);
   const [response, setResponse] = useState<any>();
-  const [question, setQuestion] = useState<any>();
   const [questionsList, setQuestionsList] = useState<any>([]);
   const [indexQuestion, setIndexQuestion] = useState<number>(0);
   const [players, setPlayers] = useState<any>([]);
@@ -33,16 +30,15 @@ const Room = () => {
       setPlayers(playersList);
     };
 
+    const getQuestionsList = (questions: any) => {
+      setQuestionsList(questions);
+    };
     const questionSelected = (questionId: any) => {
       setIndexQuestion(questionId);
     };
 
-    const getQuestionsList = (questions: any) => {
-      setQuestionsList(questions);
-    };
-
-    socket.on("playersList", getPlayersList);
     socket.on("questionStart", questionSelected);
+    socket.on("playersList", getPlayersList);
     socket.on("getQuestionsList", getQuestionsList);
   }, []);
 
@@ -51,13 +47,6 @@ const Room = () => {
       sendResponse(response);
     }
   }, [response, timeOut]);
-
-  // const getListPlayers = async () => {
-  //   const list = (await playersService.getListPlayers(partida || "")).docs.map(
-  //     (doc) => doc.data()
-  //   );
-  //   setLisPlayer(list);
-  // };
 
   const getListQuestion = async () => {
     const questionsListWho = getQuestionsRandom(quienEsMasProbable.preguntas);
@@ -94,21 +83,15 @@ const Room = () => {
 
   const sendResponseWhoIsPlayer = (resp: string) => {
     const respuesta = {
-      preguntaId: indexQuestion,
+      preguntaId: indexQuestion || 0,
       respuesta: resp,
     };
-    console.log("respuesta", respuesta);
+
+    socket.emit("saveLastResp", { partida, respuesta });
     socket.emit("saveResp", { partida, respuesta });
     navigate(`/resultado/${partida}`);
   };
 
-  // const sendResponseResp = (user: any, resp: string) => {
-  //   playersService.setChooseJugador(user, { respuesta: resp });
-  //   setChooseResponse(true);
-  //   navigate(`/resultado/${partida}`);
-  // };
-
-  console.log(question);
   return (
     <>
       <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
@@ -119,7 +102,6 @@ const Room = () => {
           questionsList={questionsList}
           numRandom={indexQuestion}
           questionId={indexQuestion}
-          questionChoose={setQuestion}
         />
       </div>
       {/* {finish ? (

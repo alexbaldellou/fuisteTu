@@ -18,13 +18,13 @@ app.get("/", (req, res) => {
 });
 
 const rooms = {};
+let indexQuestion = 0;
 
 io.on('connection', socket =>{
     console.log('client connected', socket.id)
 
     socket.on('register', ( player ) => {
       const partida = player.id;
-      console.log('player', player)
         if (!rooms[partida]) {
         rooms[partida] = {
             players: {},
@@ -64,20 +64,54 @@ io.on('connection', socket =>{
 
     socket.on('questionsList', ( info ) => {
         if (info) {
-          console.log('rooms[partida].players[socket.id]', rooms[info.partida].players)
+          console.log('rooms[partida]', rooms[info.partida])
           io.to(info.partida).emit('getQuestionsList', info.list);
         }
     });
 
     socket.on('questionChoose', ( info ) => {
         if (info) {
+          rooms[info.partida].currentQuestionIndex = info.numRandom;
           io.to(info.partida).emit('questionStart', info.numRandom);
         }
     });
+
+    socket.on('questionChoosed', ( info ) => {
+        if (info) {
+          io.to(info.partida).emit('getQuestionChoosed', rooms[info.partida].currentQuestionIndex);
+        }
+    });
+
     socket.on('saveResp', ( info ) => {
         if (info) {
           rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], respuestas: info.respuesta} ;
-          io.to(info.partida).emit('questionStart', info.numRandom);
+          console.log('rooms[info.partida]', rooms[info.partida])
+        }
+    });
+
+    socket.on('saveLastResp', ( info ) => {
+        if (info) {
+          rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], ultimaRespuesta: info.respuesta.respuesta} ;
+        }
+    });
+
+    socket.on('getLastResp', ( info ) => {
+        if (info) {
+          io.to(info.partida).emit('getLastResp', rooms[info.partida].players[socket.id].ultimaRespuesta);
+        }
+    });
+
+    socket.on('resultQuestion', ( info ) => {
+        if (info) {
+          io.to(info.partida).emit('getResultQuestion', rooms[info.partida].players);
+        }
+    });
+
+    socket.on('playerWinner', ( info ) => {
+        if (info) {
+          const player = rooms[info.partida].players[socket.id]
+          rooms[info.partida].players[socket.id] = {...player, puntos: player.puntos + 100} ;
+          console.log('rooms[partida]', rooms[info.partida])
         }
     });
 

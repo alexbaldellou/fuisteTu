@@ -6,29 +6,29 @@ export const getRandomInt = (max: number) => {
   return Math.floor(Math.random() * max);
 };
 
-export const valorMasRepetido = (array: any) => {
-  var frecuencias: any = {};
+export const valorMasRepetido = (respuestas: any) => {
+  const conteo: any = {};
 
-  const repetido = array.reduce(function (
-    valorMasRepetido: any,
-    elemento: any
-  ) {
-    frecuencias[elemento] = (frecuencias[elemento] || 0) + 1;
-    return frecuencias[elemento] > frecuencias[valorMasRepetido]
-      ? elemento
-      : valorMasRepetido;
-  },
-  array[0]);
+  respuestas.forEach((r: any) => {
+    const resp = r.respuesta;
+    conteo[resp] = (conteo[resp] || 0) + 1;
+  });
 
-  // Verificar si algún elemento se repitió
-  const repeticiones = Object.values(frecuencias);
-  const hayRepetidos = repeticiones.some((count: any) => count > 1);
+  // Buscar la respuesta con mayor conteo
+  let maxRespuesta: string | null = null;
+  let maxConteo: number = 0;
 
-  if (hayRepetidos) {
-    return repetido;
+  for (const [respuesta, cantidad] of Object.entries(conteo) as [
+    string,
+    number
+  ][]) {
+    if (cantidad > maxConteo) {
+      maxRespuesta = respuesta;
+      maxConteo = cantidad;
+    }
   }
 
-  return undefined;
+  return { respuesta: maxRespuesta, conteo: maxConteo };
 };
 
 export const ordenarMayorMenor = (list: any[], nameOrder: string) => {

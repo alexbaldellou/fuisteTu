@@ -51,7 +51,6 @@ const Home = () => {
 
   useEffect(() => {
     if (isSave && id && jugador) {
-      console.log("Nuevo registro");
       socket.emit("register", { id, jugador });
     }
   }, [id, jugador]);

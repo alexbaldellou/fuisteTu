@@ -1,89 +1,92 @@
-import { useEffect, useState } from "react";
-import { JugadorInterface } from "../../../../Interface/JugadorInterface";
-import { playersService } from "../../../../services/allService";
+import { useEffect, useRef, useState } from "react";
 import { valorMasRepetido } from "../../../Utils";
 import { useNavigate, useParams } from "react-router-dom";
-
+import socket from "../../../../utils/socket";
 
 const ResultController = () => {
 
     const navigate = useNavigate();
     const user = localStorage.getItem("id") || "";
-    const [infoJugador, setInfoJugador] = useState<any>({} as JugadorInterface);
     const { partida } = useParams();
-    const [response, setResponse] = useState<any>("");
     const [playerResp, setPlayerResp] = useState<any>();
     const [win, setWin] = useState<boolean>(false);
     const [nextQuestion, setNextQuestion] = useState<boolean>(false);
+    const [resultList, setResultList] = useState<any>([]);
+    const [idQuestion, setIdQuestion] = useState<number>(0);
+    const [lastResp, setLastResp] = useState<string>('');
+    const hasExecuted = useRef(false);
 
     useEffect(() => {
         if (user) {
-            getInfoPlayer();
+            
+            socket.emit("resultQuestion", { partida });
+            socket.emit("questionChoosed", { partida });
+            socket.emit("getLastResp", { partida });
+
+            const getResult = (questions: any) => {
+                setResultList(Object.values(questions));
+            };
+
+            const getQuestionChoosed = (id: any) => {
+                setIdQuestion(id);
+            };
+
+            const getLastResp = (resp: any) => {
+                setLastResp(resp);
+            };
+            socket.on("getResultQuestion", getResult);
+            socket.on("getQuestionChoosed", getQuestionChoosed);
+            socket.on("getLastResp", getLastResp);
+
+            return () => {
+                socket.off("getResultQuestion", getResult);
+                socket.off("getLastResp", getLastResp);
+            };
         }
     }, []);
 
-    useEffect(() => {
-        if (response) {
-            getPlayer(response);
+    useEffect(() =>{
+        if(resultList.length > 0){
+            const allResponse = resultList.map((player:any) => {
+                return player.respuestas;
+            });
+            const isUndefined = allResponse.some((item:any) => item === undefined);
+          
+            if(!isUndefined && lastResp){
+                const resultByQuestionId = allResponse.filter((val:any) => val.preguntaId === idQuestion)
+                theWinnerIs(resultByQuestionId)
+            }
+            
         }
-    }, [response]);
+    }, [resultList])
 
     useEffect(() => {
         if (nextQuestion) {
-            setPointsToPlayers();
+            setTimeout(() => {
+                navigate(`/sala/${partida}`);
+            }, 15000);
         }
     }, [nextQuestion]);
 
-    const getInfoPlayer = async () => {
-        const infoJugadorS = await playersService.getJugador(user);
-        const infoJugador = infoJugadorS.data();
-        setInfoJugador(infoJugador);
-        getResponse();
-    };
+    const theWinnerIs = (result:any) =>{
+        const mostRepeatedName = valorMasRepetido(result);
+        hasExecuted.current = true;
 
-    const getResponse = async () => {
-        // Comprobamos resultado de la partida
-        // const allPlayersS = await playersService.getListPlayers();
-        // const allPlayers: JugadorInterface[] = allPlayersS.docs
-        // .map((doc) => doc.data())
-        // .filter((data) => data.partida == partida) as JugadorInterface[];
-        const allPlayers:any = []
-        const allResponse = allPlayers.map((player:any) => {
-            return player.respuesta;
-        });
-
-        const win = valorMasRepetido(allResponse);
-        if (win) {
-            setResponse(win);
+        if(mostRepeatedName.conteo > 1){
+            console.log(`ultima: ${lastResp}, resp: ${mostRepeatedName.respuesta}`)
+            if(lastResp === mostRepeatedName.respuesta){
+                //mandar 100 puntos
+                socket.emit("playerWinner", { partida });
+                setWin(true);
+            }
+            setPlayerResp(mostRepeatedName.respuesta)
+            
         }
+        //removelastresp
+        socket.emit("saveLastResp", { partida, respuesta: {respuesta: ''} });
+        console.log('next')
         setNextQuestion(true);
-    };
-
-    const getPlayer = async (py: string) => {
-        // Recuperamos información del jugador
-        const infoPlayer = await playersService.getJugador(py);
-        const pl = infoPlayer.data();
-        setPlayerResp(pl);
-    };
-
-    const setPointsToPlayers = () => {
-        setPoints();
-        setTimeout(() => {
-            // navigate(`/locura/${partida}`);
-            navigate(`/sala/${partida}`);
-        }, 15000);
-    };
-
-    const setPoints = async () => {
-        // añadimos puntos
-        if (response === infoJugador.respuesta) {
-            const newPoint = infoJugador.puntos + 100;
-            const addPoint = { ...infoJugador, puntos: newPoint, respuesta: "" };
-            setWin(true);
-            await playersService.updateJugador(addPoint);
-        }
-    };
-
+    }
     
     return [
         playerResp,

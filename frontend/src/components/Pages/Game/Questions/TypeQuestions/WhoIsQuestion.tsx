@@ -1,3 +1,4 @@
+import { useState } from "react";
 import CardPlayer from "../../../../commons/CardPlayer";
 
 interface WhoIsQuestionProps {
@@ -8,18 +9,28 @@ interface WhoIsQuestionProps {
 
 const WhoIsQuestion = (props: WhoIsQuestionProps) => {
   const { question, playerList, onChoosePlayer } = props;
-  console.log("playerList", playerList);
-  console.log("question who", question);
+  const [playerSelected, setPlayerSelected] = useState<string>("");
+
+  const onChoose = (player: string) => {
+    onChoosePlayer(player);
+    setPlayerSelected(player);
+  };
+
   return (
-    <div key={Math.random()}>
+    <div>
       <h3 className="text-white font-bold text-3xl text-center my-10 mx-5">
         {question}
       </h3>
       <div className="flex gap-9 flex-wrap w-full">
-        {playerList.map((player: any) => {
+        {playerList.map((player: any, i: number) => {
           return (
             <>
-              <CardPlayer player={player} click={onChoosePlayer} />
+              <CardPlayer
+                key={i}
+                player={player}
+                click={onChoose}
+                playerSelected={playerSelected}
+              />
             </>
           );
         })}

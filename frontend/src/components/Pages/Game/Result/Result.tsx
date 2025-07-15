@@ -10,7 +10,7 @@ const Result = () => {
             Y el jugador que ha tenido más votos es
           </h1>
           <h1 className="font-bold text-5xl my-8 text-center uppercase  bg-gradient-to-tr from-pink-700 to-rose-500 bg-clip-text text-transparent animate-appearance-in">
-            {playerResp.nombre}
+            {playerResp}
           </h1>
           {win && (
             <div className="flex items-center justify-center animate-ping-2  bg-[url('../../../../public/Game/win.png')] bg-no-repeat bg-cover bg-center w-48 h-48">
