@@ -19,7 +19,13 @@ const Player = () => {
       setPlayers(playersList);
     };
 
+    const saveIdPlayer = (id: any) => {
+      console.log('socket.on("getId", saveIdPlayer);', id);
+      localStorage.setItem("id", id);
+    };
+
     socket.on("playersInRoom", handleUpdate);
+    socket.on("getId", saveIdPlayer);
 
     return () => {
       socket.off("playersInRoom", handleUpdate);

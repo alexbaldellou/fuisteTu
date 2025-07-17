@@ -14,14 +14,22 @@ const ResultController = () => {
     const [resultList, setResultList] = useState<any>([]);
     const [idQuestion, setIdQuestion] = useState<number>(0);
     const [lastResp, setLastResp] = useState<string>('');
+    const [numberQuestion, setNumberQuestion] = useState<number>(0);
     const hasExecuted = useRef(false);
+
+    useEffect(() =>{
+        if(win){
+            hasExecuted.current = true;
+        }
+    },[win])
 
     useEffect(() => {
         if (user) {
-            
             socket.emit("resultQuestion", { partida });
             socket.emit("questionChoosed", { partida });
             socket.emit("getLastResp", { partida });
+            socket.emit("getNQuestion", { partida });
+            socket.emit('getGame', { partida });
 
             const getResult = (questions: any) => {
                 setResultList(Object.values(questions));
@@ -32,15 +40,29 @@ const ResultController = () => {
             };
 
             const getLastResp = (resp: any) => {
+                console.log('resp', resp)
                 setLastResp(resp);
             };
+
+            const getNumberQuestion = (count: any) => {
+                setNumberQuestion(count);
+            };
+             const getGameData = (data: any) => {
+                console.log('game', data)
+            };
+
             socket.on("getResultQuestion", getResult);
             socket.on("getQuestionChoosed", getQuestionChoosed);
             socket.on("getLastResp", getLastResp);
+            socket.on("getNumberQuestion", getNumberQuestion);
+            socket.on("getGameData", getGameData);
+            
 
             return () => {
                 socket.off("getResultQuestion", getResult);
+                socket.off("getQuestionChoosed", getQuestionChoosed);
                 socket.off("getLastResp", getLastResp);
+                socket.off("getNumberQuestion", getNumberQuestion);
             };
         }
     }, []);
@@ -64,17 +86,14 @@ const ResultController = () => {
         if (nextQuestion) {
             setTimeout(() => {
                 navigate(`/sala/${partida}`);
-            }, 15000);
+            }, 10000);
         }
     }, [nextQuestion]);
 
     const theWinnerIs = (result:any) =>{
         const mostRepeatedName = valorMasRepetido(result);
-        hasExecuted.current = true;
-
         if(mostRepeatedName.conteo > 1){
-            console.log(`ultima: ${lastResp}, resp: ${mostRepeatedName.respuesta}`)
-            if(lastResp === mostRepeatedName.respuesta){
+            if(lastResp === mostRepeatedName.respuesta  && !hasExecuted.current){
                 //mandar 100 puntos
                 socket.emit("playerWinner", { partida });
                 setWin(true);
@@ -82,11 +101,28 @@ const ResultController = () => {
             setPlayerResp(mostRepeatedName.respuesta)
             
         }
-        //removelastresp
         socket.emit("saveLastResp", { partida, respuesta: {respuesta: ''} });
-        console.log('next')
-        setNextQuestion(true);
+        
+        if(numberQuestion > 0){//TODO: COMPROBAR RESULTADO ANTES DE MANDAR A FINAL
+            console.log('next')
+            updateNPreguntas()
+            setNextQuestion(true);
+        }else{
+            console.log('finish')
+            setTimeout(() => {
+                 navigate(`/final/${partida}`);
+            }, 10000);
+        }
     }
+
+    const updateNPreguntas = () => {
+        const updateNPreguntas = numberQuestion - 1;
+
+        socket.emit("setNumberQuestion", {
+        id: partida,
+        nPreguntas: updateNPreguntas,
+        });
+  };
     
     return [
         playerResp,

@@ -1,18 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardPlayer from "../../../../commons/CardPlayer";
 
 interface WhoIsQuestionProps {
   question: string;
   playerList: any;
+  timeOut: boolean;
+  player: string;
   onChoosePlayer: (player: string) => void;
 }
 
 const WhoIsQuestion = (props: WhoIsQuestionProps) => {
-  const { question, playerList, onChoosePlayer } = props;
-  const [playerSelected, setPlayerSelected] = useState<string>("");
+  const { question, playerList, player, onChoosePlayer } = props;
+  const [playerSelected, setPlayerSelected] = useState<string>(player);
+
+  useEffect(() => {
+    if (playerSelected) {
+      onChoosePlayer(playerSelected);
+    }
+  }, [playerSelected]);
 
   const onChoose = (player: string) => {
-    onChoosePlayer(player);
     setPlayerSelected(player);
   };
 
@@ -24,14 +31,13 @@ const WhoIsQuestion = (props: WhoIsQuestionProps) => {
       <div className="flex gap-9 flex-wrap w-full">
         {playerList.map((player: any, i: number) => {
           return (
-            <>
-              <CardPlayer
-                key={i}
-                player={player}
-                click={onChoose}
-                playerSelected={playerSelected}
-              />
-            </>
+            <CardPlayer
+              key={i}
+              player={player}
+              click={onChoose}
+              playerSelected={playerSelected}
+              onChoosePlayer={setPlayerSelected}
+            />
           );
         })}
       </div>

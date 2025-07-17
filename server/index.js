@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
 });
 
 const rooms = {};
-let indexQuestion = 0;
+let nPreguntas = 0;
 
 io.on('connection', socket =>{
     console.log('client connected', socket.id)
@@ -40,7 +40,7 @@ io.on('connection', socket =>{
 
         // Avisar a todos en la sala
         io.to(partida).emit('playersInRoom', Object.values(rooms[partida].players));
-
+        io.to(partida).emit('getId', socket.id);
     });
 
     socket.on('playersList', ( info ) => {
@@ -62,16 +62,27 @@ io.on('connection', socket =>{
         }
     });
 
+    socket.on('setNumberQuestion', ( info ) => {
+        if (info) {
+          nPreguntas = info.nPreguntas;
+        }
+    });
+
+    socket.on('getNQuestion', ( info ) => {
+        if (info) {
+          io.to(info.partida).emit('getNumberQuestion', nPreguntas);
+        }
+    });
+
     socket.on('questionsList', ( info ) => {
         if (info) {
-          console.log('rooms[partida]', rooms[info.partida])
           io.to(info.partida).emit('getQuestionsList', info.list);
         }
     });
 
     socket.on('questionChoose', ( info ) => {
         if (info) {
-          rooms[info.partida].currentQuestionIndex = info.numRandom;
+          rooms[info.partida] = {...rooms[info.partida], currentQuestionIndex: info.numRandom};
           io.to(info.partida).emit('questionStart', info.numRandom);
         }
     });
@@ -84,19 +95,20 @@ io.on('connection', socket =>{
 
     socket.on('saveResp', ( info ) => {
         if (info) {
-          rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], respuestas: info.respuesta} ;
-          console.log('rooms[info.partida]', rooms[info.partida])
+          rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], respuestas: info.respuesta};
         }
     });
 
     socket.on('saveLastResp', ( info ) => {
         if (info) {
-          rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], ultimaRespuesta: info.respuesta.respuesta} ;
+          rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], ultimaRespuesta: info.respuesta.respuesta};
         }
     });
 
     socket.on('getLastResp', ( info ) => {
         if (info) {
+          console.log('socket.id', socket.id)
+          console.log('rooms[info.partida].players[socket.id].ultimaRespuesta', rooms[info.partida].players[socket.id].ultimaRespuesta)
           io.to(info.partida).emit('getLastResp', rooms[info.partida].players[socket.id].ultimaRespuesta);
         }
     });
@@ -110,8 +122,13 @@ io.on('connection', socket =>{
     socket.on('playerWinner', ( info ) => {
         if (info) {
           const player = rooms[info.partida].players[socket.id]
-          rooms[info.partida].players[socket.id] = {...player, puntos: player.puntos + 100} ;
-          console.log('rooms[partida]', rooms[info.partida])
+          rooms[info.partida].players[socket.id] = {...player, puntos: player.puntos + 100};
+        }
+    });
+
+    socket.on('getGame', ( info ) => {
+        if (info) {
+          io.to(info.partida).emit('getGameData', rooms[info.partida]);
         }
     });
 

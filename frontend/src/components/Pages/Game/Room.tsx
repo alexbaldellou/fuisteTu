@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Questions from "./Questions/Questions";
 import CountDown from "./CountDown/CountDown";
 import { useParams, useNavigate } from "react-router-dom";
 import { getNameRandom, getQuestionsRandom, getRandomInt } from "../../Utils";
 
 import quienEsMasProbable from "../../../assets/questions/quienesmasprobable.json";
-import siJugador from "../../../assets/questions/sijugador.json";
+// import siJugador from "../../../assets/questions/sijugador.json";
 
 import socket from "../../../utils/socket";
 
+//TODO: LIMITAR Nº PREGRUNTAS
 const Room = () => {
   const { partida } = useParams();
   const navigate = useNavigate();
@@ -18,13 +19,15 @@ const Room = () => {
   const [indexQuestion, setIndexQuestion] = useState<number>(0);
   const [players, setPlayers] = useState<any>([]);
   const [finish, setFinish] = useState<boolean>(false);
-
+  const hasSentResponse = useRef(false);
   useEffect(() => {
     getListQuestion();
   }, []);
 
   useEffect(() => {
     if (!partida) return;
+
+    socket.emit("getNQuestion", { partida });
 
     const getPlayersList = (playersList: any) => {
       setPlayers(playersList);
@@ -38,22 +41,30 @@ const Room = () => {
     };
 
     socket.on("questionStart", questionSelected);
+
     socket.on("playersList", getPlayersList);
     socket.on("getQuestionsList", getQuestionsList);
+
+    return () => {
+      socket.off("questionStart", questionSelected);
+      socket.off("playersList", getPlayersList);
+      socket.off("getQuestionsList", getQuestionsList);
+    };
   }, []);
 
   useEffect(() => {
-    if (response && timeOut) {
+    if (response && timeOut && !hasSentResponse.current) {
       sendResponse(response);
+      hasSentResponse.current = true;
     }
   }, [response, timeOut]);
 
   const getListQuestion = async () => {
     const questionsListWho = getQuestionsRandom(quienEsMasProbable.preguntas);
     //TODO: CONCADENAR TIPO RESPUESTA
-    const questionsListIf = getQuestionsRandom(siJugador.preguntas);
-    const list = questionsListWho.concat(questionsListIf);
-    // const list = questionsListWho;
+    // const questionsListIf = getQuestionsRandom(siJugador.preguntas);
+    // const list = questionsListWho.concat(questionsListIf);
+    const list = questionsListWho;
 
     if (finish) {
       setFinish(true);
@@ -69,7 +80,7 @@ const Room = () => {
     if (resp) {
       const nameRandom = getNameRandom(players);
       socket.emit("nameRandom", { partida, nameRandom });
-      navigate(`/resultado/${partida}`);
+
       switch (resp.type) {
         case "QUIEN_SERIA":
           sendResponseWhoIsPlayer(resp.resp);
@@ -104,37 +115,6 @@ const Room = () => {
           questionId={indexQuestion}
         />
       </div>
-      {/* {finish ? (
-        <FinishGame />
-      ) : !chooseResponse ? (
-        <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
-          <CountDown seconds={15} onTimeOut={setTimeOut} />
-          <Questions
-            players={listPlayer}
-            timeOut={timeOut}
-            onResponse={setResponse}
-            game={partida}
-            numRandom={indexQuestion}
-            question={questionRandom}
-            questionChoose={setQuestion}
-          />
-        </div>
-      ) : (
-        <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
-       <CountDown seconds={15} onTimeOut={setTimeOut} />
-          <ResponseChooseQuestion partida={partida} />
-          <Questions
-            players={listPlayer}
-            timeOut={timeOut}
-            onResponse={setResponse}
-            questionChoose={setQuestion}
-            game={partida}
-            question={questionRandom}
-            numRandom={indexQuestion}
-            // finishGame={setFinish}
-          /> 
-        </div>
-      )} */}
     </>
   );
 };

@@ -73,7 +73,9 @@ const Questions = (props: QuestionsProps) => {
             key={Math.random()}
             question={question || ""}
             playerList={players}
+            player={choosePlayer}
             onChoosePlayer={setChoosePlayer}
+            timeOut={timeOut}
           />
         )}
       </form>
