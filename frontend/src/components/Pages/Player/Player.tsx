@@ -19,13 +19,7 @@ const Player = () => {
       setPlayers(playersList);
     };
 
-    const saveIdPlayer = (id: any) => {
-      console.log('socket.on("getId", saveIdPlayer);', id);
-      localStorage.setItem("id", id);
-    };
-
     socket.on("playersInRoom", handleUpdate);
-    socket.on("getId", saveIdPlayer);
 
     return () => {
       socket.off("playersInRoom", handleUpdate);
@@ -35,7 +29,6 @@ const Player = () => {
   useEffect(() => {
     if (isSave) {
       console.log("Nuevo registro");
-      // Unirse a la sala (esto puede estar en otro componente también)
       socket.emit("register", { partida, jugador });
     }
   }, [partida, jugador]);

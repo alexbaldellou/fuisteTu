@@ -92,6 +92,9 @@ const ResultController = () => {
 
     const theWinnerIs = (result:any) =>{
         const mostRepeatedName = valorMasRepetido(result);
+        console.log('lastResp', lastResp)
+        console.log('mostRepeatedName', mostRepeatedName)
+        
         if(mostRepeatedName.conteo > 1){
             if(lastResp === mostRepeatedName.respuesta  && !hasExecuted.current){
                 //mandar 100 puntos
