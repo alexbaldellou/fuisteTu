@@ -39,8 +39,7 @@ io.on('connection', socket =>{
         console.log(`${player.jugador.nombre} se unió a la sala ${partida}`);
 
         // Avisar a todos en la sala
-        io.to(partida).emit('playersInRoom', Object.values(rooms[partida].players));
-        io.to(partida).emit('getId', socket.id);
+        io.to(partida).emit('playersInRoom', Object.values(rooms[partida].players))
     });
 
     socket.on('playersList', ( info ) => {
@@ -107,9 +106,8 @@ io.on('connection', socket =>{
 
     socket.on('getLastResp', ( info ) => {
         if (info) {
-          console.log('socket.id', socket.id)
-          console.log('rooms[info.partida].players[socket.id].ultimaRespuesta', rooms[info.partida].players[socket.id].ultimaRespuesta)
-          io.to(info.partida).emit('getLastResp', rooms[info.partida].players[socket.id].ultimaRespuesta);
+          // io.to(info.partida).emit('getLastResp', rooms[info.partida].players[socket.id].ultimaRespuesta);
+          io.to(info.partida).emit('getLastResp', rooms[info.partida].players[socket.id].respuestas.respuesta);
         }
     });
 
