@@ -8,7 +8,7 @@ const io = new SocketServer(server)
 
 
 app.use(cors({
-  origin: "*", // o tu frontend en producción
+  origin: "https://fuiste-tu.vercel.app", // o tu frontend en producción
   methods: ["GET", "POST"],
 //   credentials: true,
 }));
