@@ -24,7 +24,6 @@ const ResultController = () => {
     },[win])
 
     useEffect(() => {
-        if (user) {
             socket.emit("resultQuestion", { partida });
             socket.emit("questionChoosed", { partida });
             socket.emit("getLastResp", { partida });
@@ -64,7 +63,6 @@ const ResultController = () => {
                 socket.off("getLastResp", getLastResp);
                 socket.off("getNumberQuestion", getNumberQuestion);
             };
-        }
     }, []);
 
     useEffect(() =>{

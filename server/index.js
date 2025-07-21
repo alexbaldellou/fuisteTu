@@ -107,7 +107,9 @@ io.on('connection', socket =>{
     socket.on('getLastResp', ( info ) => {
         if (info) {
           // io.to(info.partida).emit('getLastResp', rooms[info.partida].players[socket.id].ultimaRespuesta);
-          io.to(info.partida).emit('getLastResp', rooms[info.partida].players[socket.id].respuestas.respuesta);
+          console.log(`info ${socket.id}: ${rooms[info.partida].players[socket.id].respuestas.respuesta}`)
+          const resp = rooms[info.partida].players[socket.id].respuestas.respuesta;
+          io.to(info.partida).emit('getLastResp', resp);
         }
     });
 
