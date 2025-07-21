@@ -37,7 +37,7 @@ const Questions = (props: QuestionsProps) => {
   }, []);
 
   useEffect(() => {
-    if ((choosePlayer || respChoose) && timeOut) {
+    if (choosePlayer || respChoose) {
       if (choosePlayer) {
         onResponse({ resp: choosePlayer, type: "QUIEN_SERIA" });
       } else if (respChoose) {
@@ -45,7 +45,7 @@ const Questions = (props: QuestionsProps) => {
         onResponse({ resp: choose, type: "RESPUESTA" });
       }
     }
-  }, [choosePlayer, timeOut, respChoose]);
+  }, [choosePlayer, respChoose]);
 
   useEffect(() => {
     if (players.length > 0) {
