@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Questions from "./Questions/Questions";
 import CountDown from "./CountDown/CountDown";
 import { useParams, useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ const Room = () => {
   const [indexQuestion, setIndexQuestion] = useState<number>(0);
   const [players, setPlayers] = useState<any>([]);
   const [finish, setFinish] = useState<boolean>(false);
-  const hasSentResponse = useRef(false);
+  // const hasSentResponse = useRef(false);
   useEffect(() => {
     getListQuestion();
   }, []);
