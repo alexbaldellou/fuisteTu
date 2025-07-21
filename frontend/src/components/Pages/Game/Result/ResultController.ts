@@ -24,17 +24,12 @@ const ResultController = () => {
 
     useEffect(() => {
             socket.emit("resultQuestion", { partida });
-            // socket.emit("questionChoosed", { partida });
             socket.emit("getLastResp", { partida });
             socket.emit("getNQuestion", { partida });
 
             const getResult = (questions: any) => {
                 setResultList(questions);
             };
-
-            // const getQuestionChoosed = (id: any) => {
-            //     setIdQuestion(id);
-            // };
 
             const getLastResp = (resp: any) => {
                 setLastResp(resp);
@@ -46,15 +41,10 @@ const ResultController = () => {
             };
 
             socket.on("getResultQuestion", getResult);
-            // socket.on("getQuestionChoosed", getQuestionChoosed);
-             socket.on("getNumberQuestion", getNumberQuestion);
+            socket.on("getNumberQuestion", getNumberQuestion);
             socket.on("getLastResp", getLastResp);
-           
-            
-
             return () => {
                 socket.off("getResultQuestion", getResult);
-                // socket.off("getQuestionChoosed", getQuestionChoosed);
                 socket.off("getLastResp", getLastResp);
                 socket.off("getNumberQuestion", getNumberQuestion);
             };
@@ -74,7 +64,7 @@ const ResultController = () => {
             // }
             
         }
-    }, [resultList])
+    }, [resultList, numberQuestion])
 
     useEffect(() => {
         if (nextQuestion) {
@@ -94,10 +84,7 @@ const ResultController = () => {
                 setWin(true);
             }
             setPlayerResp(mostRepeatedName.respuesta)
-            
-        }
-        socket.emit("saveLastResp", { partida, respuesta: {respuesta: ''} });
-    console.log('numberQuestion', numberQuestion)
+            console.log('numberQuestion', numberQuestion)
         if(numberQuestion > 0){//TODO: COMPROBAR RESULTADO ANTES DE MANDAR A FINAL
             console.log('next')
             updateNPreguntas()
@@ -108,6 +95,10 @@ const ResultController = () => {
                  navigate(`/final/${partida}`);
             }, 10000);
         }
+        }
+        socket.emit("saveLastResp", { partida, respuesta: {respuesta: ''} });
+    
+        
     }
 
     const updateNPreguntas = () => {
