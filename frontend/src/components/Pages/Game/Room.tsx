@@ -53,9 +53,19 @@ const Room = () => {
   }, []);
 
   useEffect(() => {
-    if (response && timeOut && !hasSentResponse.current) {
+    //funciina
+    // if (response && timeOut && !hasSentResponse.current) {
+    //   sendResponse(response);
+    //   hasSentResponse.current = true;
+    // }
+    if (response) {
+      console.log("we");
       sendResponse(response);
-      hasSentResponse.current = true;
+    }
+
+    if (response && timeOut) {
+      goResult();
+      // hasSentResponse.current = true;
     }
   }, [response, timeOut]);
 
@@ -92,6 +102,10 @@ const Room = () => {
     }
   };
 
+  const goResult = () => {
+    navigate(`/resultado/${partida}`);
+  };
+
   const sendResponseWhoIsPlayer = (resp: string) => {
     const respuesta = {
       preguntaId: indexQuestion || 0,
@@ -100,7 +114,7 @@ const Room = () => {
 
     socket.emit("saveLastResp", { partida, respuesta });
     socket.emit("saveResp", { partida, respuesta });
-    navigate(`/resultado/${partida}`);
+    // navigate(`/resultado/${partida}`);
   };
 
   return (
