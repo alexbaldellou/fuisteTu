@@ -85,7 +85,7 @@ const ResultController = () => {
     const theWinnerIs = (result:any) =>{
         const mostRepeatedName = valorMasRepetido(result);
         
-        if(mostRepeatedName.conteo > 1){
+        if(mostRepeatedName.conteo > 0){
             if(lastResp === mostRepeatedName.respuesta  && !hasExecuted.current){
                 //mandar 100 puntos
                 socket.emit("playerWinner", { partida });
