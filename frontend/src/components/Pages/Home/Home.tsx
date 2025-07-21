@@ -90,7 +90,7 @@ const Home = () => {
                   className="ring-2 ring-orange-600 rounded-md px-3"
                   value={nPreguntas}
                 >
-                  <option value={3}>3</option>
+                  <option value={2}>3</option>
                   <option value={5}>5</option>
                   <option value={15}>15</option>
                   <option value={30}>30</option>

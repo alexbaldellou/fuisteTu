@@ -27,10 +27,9 @@ const ResultController = () => {
             socket.emit("questionChoosed", { partida });
             socket.emit("getLastResp", { partida });
             socket.emit("getNQuestion", { partida });
-            socket.emit('getGame', { partida });
 
             const getResult = (questions: any) => {
-                setResultList(Object.values(questions));
+                setResultList(questions);
             };
 
             const getQuestionChoosed = (id: any) => {
@@ -45,15 +44,11 @@ const ResultController = () => {
             const getNumberQuestion = (count: any) => {
                 setNumberQuestion(count);
             };
-             const getGameData = (data: any) => {
-                console.log('game', data)
-            };
 
             socket.on("getResultQuestion", getResult);
             socket.on("getQuestionChoosed", getQuestionChoosed);
             socket.on("getLastResp", getLastResp);
             socket.on("getNumberQuestion", getNumberQuestion);
-            socket.on("getGameData", getGameData);
             
 
             return () => {
@@ -66,12 +61,14 @@ const ResultController = () => {
 
     useEffect(() =>{
         if(resultList.length > 0){
+            console.log('allResponse', resultList)
             const allResponse = resultList.map((player:any) => {
                 return player.respuestas;
             });
             const isUndefined = allResponse.some((item:any) => item === undefined);
           
-            if(!isUndefined && lastResp){
+            if(!isUndefined && lastResp){ //asdasdasd
+                
                 const resultByQuestionId = allResponse.filter((val:any) => val.preguntaId === idQuestion)
                 theWinnerIs(resultByQuestionId)
             }
@@ -88,6 +85,7 @@ const ResultController = () => {
     }, [nextQuestion]);
 
     const theWinnerIs = (result:any) =>{
+        console.log('allResponse', result)
         const mostRepeatedName = valorMasRepetido(result);
         console.log('lastResp', lastResp)
         console.log('mostRepeatedName', mostRepeatedName)
