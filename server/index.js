@@ -69,6 +69,7 @@ io.on('connection', socket =>{
 
     socket.on('getNQuestion', ( info ) => {
         if (info) {
+          console.log('nPreguntas', nPreguntas)
           io.to(info.partida).emit('getNumberQuestion', nPreguntas);
         }
     });

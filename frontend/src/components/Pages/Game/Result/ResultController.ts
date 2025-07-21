@@ -24,7 +24,7 @@ const ResultController = () => {
 
     useEffect(() => {
             socket.emit("resultQuestion", { partida });
-            socket.emit("questionChoosed", { partida });
+            // socket.emit("questionChoosed", { partida });
             socket.emit("getLastResp", { partida });
             socket.emit("getNQuestion", { partida });
 
@@ -41,13 +41,15 @@ const ResultController = () => {
             };
 
             const getNumberQuestion = (count: any) => {
+                console.log('count', count)
                 setNumberQuestion(count);
             };
 
             socket.on("getResultQuestion", getResult);
             // socket.on("getQuestionChoosed", getQuestionChoosed);
+             socket.on("getNumberQuestion", getNumberQuestion);
             socket.on("getLastResp", getLastResp);
-            socket.on("getNumberQuestion", getNumberQuestion);
+           
             
 
             return () => {
@@ -95,7 +97,7 @@ const ResultController = () => {
             
         }
         socket.emit("saveLastResp", { partida, respuesta: {respuesta: ''} });
-        
+    console.log('numberQuestion', numberQuestion)
         if(numberQuestion > 0){//TODO: COMPROBAR RESULTADO ANTES DE MANDAR A FINAL
             console.log('next')
             updateNPreguntas()
