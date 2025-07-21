@@ -11,7 +11,7 @@ const ResultController = () => {
     const [win, setWin] = useState<boolean>(false);
     const [nextQuestion, setNextQuestion] = useState<boolean>(false);
     const [resultList, setResultList] = useState<any>([]);
-    const [idQuestion, setIdQuestion] = useState<number>(0);
+    // const [idQuestion, setIdQuestion] = useState<number>(0);
     const [lastResp, setLastResp] = useState<string>('');
     const [numberQuestion, setNumberQuestion] = useState<number>(0);
     const hasExecuted = useRef(false);
@@ -32,9 +32,9 @@ const ResultController = () => {
                 setResultList(questions);
             };
 
-            const getQuestionChoosed = (id: any) => {
-                setIdQuestion(id);
-            };
+            // const getQuestionChoosed = (id: any) => {
+            //     setIdQuestion(id);
+            // };
 
             const getLastResp = (resp: any) => {
                 setLastResp(resp);
@@ -45,14 +45,14 @@ const ResultController = () => {
             };
 
             socket.on("getResultQuestion", getResult);
-            socket.on("getQuestionChoosed", getQuestionChoosed);
+            // socket.on("getQuestionChoosed", getQuestionChoosed);
             socket.on("getLastResp", getLastResp);
             socket.on("getNumberQuestion", getNumberQuestion);
             
 
             return () => {
                 socket.off("getResultQuestion", getResult);
-                socket.off("getQuestionChoosed", getQuestionChoosed);
+                // socket.off("getQuestionChoosed", getQuestionChoosed);
                 socket.off("getLastResp", getLastResp);
                 socket.off("getNumberQuestion", getNumberQuestion);
             };
@@ -63,13 +63,13 @@ const ResultController = () => {
             const allResponse = resultList.map((player:any) => {
                 return player.respuestas;
             });
-            const isUndefined = allResponse.some((item:any) => item === undefined);
-          
-            if(!isUndefined && lastResp){ //asdasdasd
+            // const isUndefined = allResponse.some((item:any) => item === undefined);
+            console.log('allResponse', allResponse)
+            // if(!isUndefined && lastResp){ //asdasdasd
                 
-                const resultByQuestionId = allResponse.filter((val:any) => val.preguntaId === idQuestion)
-                theWinnerIs(resultByQuestionId)
-            }
+            //     const resultByQuestionId = allResponse.filter((val:any) => val.preguntaId === idQuestion)
+                theWinnerIs(allResponse)
+            // }
             
         }
     }, [resultList])
