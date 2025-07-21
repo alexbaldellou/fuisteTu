@@ -59,7 +59,6 @@ const Room = () => {
     //   hasSentResponse.current = true;
     // }
     if (response) {
-      console.log("we");
       sendResponse(response);
     }
 

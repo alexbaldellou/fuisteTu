@@ -12,8 +12,9 @@ const Home = () => {
   const navigate = useNavigate();
   const { id, typePlayer } = useParams();
   const [url, setUrl] = useState("");
-  const [nPreguntas, setNPreguntas] = useState(3);
+  const [nPreguntas, setNPreguntas] = useState(2);
   const [isSave, setIsSave] = useState<boolean>(false);
+  const [copiado, setCopiado] = useState(false);
   const [jugador, setJugador] = useState<JugadorInterface>(
     {} as JugadorInterface
   );
@@ -65,40 +66,78 @@ const Home = () => {
     }
   };
 
+  const copyUrl = async () => {
+    await navigator.clipboard.writeText(url);
+    setCopiado(true);
+  };
+
   return (
-    <div className="md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500 flex justify-center items-center flex-col">
-      <div className="flex flex-row w-2/6">
-        <div className="w-1/2">
+    <div className="pt-48 md:pt-0 md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500 flex justify-center items-center flex-col">
+      <div className="md:flex md:flex-row md:w-3/6">
+        <div className="md:w-1/2">
           <RegisterPlayer
             partidaId={id || ""}
             onChangePlayer={setJugador}
             onSave={setIsSave}
           />
         </div>
-        <div className="w-1/2">
+        <div className="md:w-1/2">
           <ListPlayers playersList={players} />
         </div>
       </div>
       {typePlayer === "host" && (
         <>
-          <div className="flex flex-row w-2/6 mt-3">
+          <div className="flex flex-row w-3/6 mt-3">
             <div className="w-full">
               <div className="p-7 rounded-3xl bg-white flex text-xl font-medium">
-                <p className="mr-3">Nº preguntas</p>
-                <select
-                  onChange={(n) => setNPreguntas(Number(n.target.value))}
-                  className="ring-2 ring-orange-600 rounded-md px-3"
-                  value={nPreguntas}
-                >
-                  <option value={2}>3</option>
-                  <option value={5}>5</option>
-                  <option value={15}>15</option>
-                  <option value={30}>30</option>
-                  <option value={60}>60</option>
-                </select>
+                <div className="w-1/2 ">
+                  <p className="mr-3">Nº preguntas</p>
+                  <select
+                    onChange={(n) => setNPreguntas(Number(n.target.value))}
+                    className="ring-2 ring-orange-600 rounded-md px-3 w-1/3 mt-2"
+                    value={nPreguntas}
+                  >
+                    <option value={2}>2</option>
+                    <option value={3}>3</option>
+                    <option value={5}>5</option>
+                    <option value={15}>15</option>
+                    <option value={30}>30</option>
+                    <option value={60}>60</option>
+                  </select>
+                </div>
+                <div className="w-1/2 mt-3">
+                  <Input
+                    label="Comparte la URL a los demás"
+                    alt={`${copiado ? "Copiado url" : ""}`}
+                    value={url}
+                    onClick={copyUrl}
+                  />
+                  {copiado && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -36,
+                        left: 0,
+                        transform: "translateX(0)",
+                        padding: "6px 10px",
+                        borderRadius: 4,
+                        backgroundColor: copiado ? "#28a745" : "#343a40",
+                        color: "#fff",
+                        fontSize: 13,
+                        whiteSpace: "nowrap",
+                        pointerEvents: "none",
+                        transition: "opacity 0.2s",
+                        opacity: 0.95,
+                      }}
+                    >
+                      {copiado ? "✅ Copiado!" : "Haz clic para copiar"}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
+
           <Button
             color="secondary"
             variant="shadow"
@@ -107,9 +146,6 @@ const Home = () => {
           >
             EMPEZAR LA LOCURA
           </Button>
-          <div className="w-4/12">
-            <Input label="Comparte la URL a los demás" value={url} />
-          </div>
         </>
       )}
     </div>

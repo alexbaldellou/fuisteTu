@@ -37,7 +37,6 @@ const ResultController = () => {
             };
 
             const getLastResp = (resp: any) => {
-                console.log('resp', resp)
                 setLastResp(resp);
             };
 
@@ -61,7 +60,6 @@ const ResultController = () => {
 
     useEffect(() =>{
         if(resultList.length > 0){
-            console.log('allResponse', resultList)
             const allResponse = resultList.map((player:any) => {
                 return player.respuestas;
             });
@@ -85,10 +83,7 @@ const ResultController = () => {
     }, [nextQuestion]);
 
     const theWinnerIs = (result:any) =>{
-        console.log('allResponse', result)
         const mostRepeatedName = valorMasRepetido(result);
-        console.log('lastResp', lastResp)
-        console.log('mostRepeatedName', mostRepeatedName)
         
         if(mostRepeatedName.conteo > 1){
             if(lastResp === mostRepeatedName.respuesta  && !hasExecuted.current){

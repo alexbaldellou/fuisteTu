@@ -107,15 +107,15 @@ io.on('connection', socket =>{
     socket.on('getLastResp', ( info ) => {
         if (info) {
           // io.to(info.partida).emit('getLastResp', rooms[info.partida].players[socket.id].ultimaRespuesta);
-          console.log(`info ${socket.id}: ${rooms[info.partida].players[socket.id].respuestas.respuesta}`)
-          const resp = rooms[info.partida].players[socket.id].respuestas.respuesta;
+          const resp = rooms[info.partida].players[socket.id].ultimaRespuesta;
           io.to(info.partida).emit('getLastResp', resp);
         }
     });
 
     socket.on('resultQuestion', ( info ) => {
         if (info) {
-          io.to(info.partida).emit('getResultQuestion', rooms[info.partida].players);
+          const result = Object.values(rooms[info.partida].players);
+          io.to(info.partida).emit('getResultQuestion', result);
         }
     });
 

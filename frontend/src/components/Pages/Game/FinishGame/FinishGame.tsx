@@ -44,13 +44,12 @@ const FinishGame = () => {
   return (
     <div className="w-full flex justify-center items-center flex-col py-14 md:h-dvh bg-gradient-to-tr from-pink-500 to-yellow-500">
       <Winner player={playerWin} />
-      <div className="md:w-5/12">
+      <div className="flex gap-9 flex-wrap w-3/6">
         {players &&
           players.map((player: any, i: number) => {
             return <CardPlayer key={i} player={player} />;
           })}
       </div>
-      <p>finish</p>
     </div>
   );
 };

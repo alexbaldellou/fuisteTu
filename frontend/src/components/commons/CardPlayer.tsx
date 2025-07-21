@@ -23,7 +23,7 @@ const CardPlayer = (props: CardPlayerInterface) => {
       <div
         className={`${
           isActive ? "bg-white/45 ring-purple-500" : ""
-        } ring-4 flex items-center justify-between m-1 w-full bg-white/25 p-3 rounded-3xl focus:ring-purple-500 focus:ring-4 hover:ring-purple-500 hover:ring-4`}
+        } ring-4 flex items-center justify-between m-1 w-full bg-white/25 p-3 rounded-3xl focus:ring-purple-500 focus:ring-4 hover:ring-purple-500 hover:ring-4 mx-3`}
         key={player.id}
         onClick={() => click && click(player.nombre)}
       >

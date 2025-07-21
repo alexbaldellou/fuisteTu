@@ -26,6 +26,11 @@ export const Avatars = (props: Avatars) => {
     monster7,
     monster8,
   ];
+
+  const chooseAv = (avatar: string) => {
+    chooseAvatar(avatar);
+    setShowPopup(!showPopup);
+  };
   return (
     <div className="relative flex justify-end ">
       <button
@@ -46,7 +51,7 @@ export const Avatars = (props: Avatars) => {
                 color="secondary"
                 src={monster}
                 className="w-12 h-12 text-large m-auto mb-5"
-                onClick={() => chooseAvatar(monster)}
+                onClick={() => chooseAv(monster)}
               />
             );
           })}
