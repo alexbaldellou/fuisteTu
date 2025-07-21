@@ -6,7 +6,6 @@ import socket from "../../../../utils/socket";
 const ResultController = () => {
 
     const navigate = useNavigate();
-    const user = localStorage.getItem("id") || "";
     const { partida } = useParams();
     const [playerResp, setPlayerResp] = useState<any>();
     const [win, setWin] = useState<boolean>(false);
