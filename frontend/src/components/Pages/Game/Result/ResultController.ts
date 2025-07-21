@@ -67,7 +67,7 @@ const ResultController = () => {
             console.log('allResponse', allResponse)
             // if(!isUndefined && lastResp){ //asdasdasd
                 
-            //     const resultByQuestionId = allResponse.filter((val:any) => val.preguntaId === idQuestion)
+                // const resultByQuestionId = allResponse.filter((val:any) => val.preguntaId === idQuestion)
                 theWinnerIs(allResponse)
             // }
             
@@ -85,7 +85,7 @@ const ResultController = () => {
     const theWinnerIs = (result:any) =>{
         const mostRepeatedName = valorMasRepetido(result);
         
-        if(mostRepeatedName.conteo > 0){
+        if(mostRepeatedName.conteo > 1){
             if(lastResp === mostRepeatedName.respuesta  && !hasExecuted.current){
                 //mandar 100 puntos
                 socket.emit("playerWinner", { partida });
