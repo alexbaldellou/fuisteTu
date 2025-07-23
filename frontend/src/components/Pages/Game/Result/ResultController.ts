@@ -76,7 +76,7 @@ const ResultController = () => {
     const theWinnerIs = (result:any) =>{
         const mostRepeatedName = valorMasRepetido(result);
         console.log('idPlayer', idPlayer)
-        const respPlayer = result.find((player:any) => player.id === idPlayer);
+        const respPlayer = result.find((player:any) => player.nombre === idPlayer.nombre);
         if(mostRepeatedName.conteo > 0){
             console.log('respPlayer', respPlayer)
 
