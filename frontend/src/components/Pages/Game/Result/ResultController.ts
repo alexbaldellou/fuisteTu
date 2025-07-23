@@ -80,7 +80,7 @@ const ResultController = () => {
         const respPlayer = result.find((player:any) => player.jugador === idPlayer.nombre);
         console.log('respPlayer', respPlayer)
         if(mostRepeatedName.conteo > 0){
-            if(respPlayer.respuestas.respuesta === mostRepeatedName.respuesta  && !hasExecuted.current){
+            if(respPlayer.respuesta === mostRepeatedName.respuesta  && !hasExecuted.current){
                 //mandar 100 puntos
                 socket.emit("playerWinner", { partida });
                 setWin(true);
