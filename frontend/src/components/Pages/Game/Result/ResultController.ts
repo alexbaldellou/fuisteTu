@@ -77,7 +77,7 @@ const ResultController = () => {
         const mostRepeatedName = valorMasRepetido(result);
         console.log('idPlayer', idPlayer)
         console.log('result', result)
-        const respPlayer = result.find((player:any) => player.nombre === idPlayer.nombre);
+        const respPlayer = result.find((player:any) => player.jugador === idPlayer.nombre);
         console.log('respPlayer', respPlayer)
         if(mostRepeatedName.conteo > 0){
             if(respPlayer.respuestas.respuesta === mostRepeatedName.respuesta  && !hasExecuted.current){
