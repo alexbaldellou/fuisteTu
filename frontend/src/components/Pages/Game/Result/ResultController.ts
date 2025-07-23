@@ -26,20 +26,21 @@ const ResultController = () => {
 
     useEffect(() => {
 
-            const getResult = ({ result, count }: { result: any; count: number }) => {
+            const getResult = ({ result, count, id }: { result: any; count: number, id:any }) => {
                 setNumberQuestion(count);
+                setIdPlayer(id);
                 setResultList(result);
               };
 
-            const getIdPlayer = (resp: any) => {
-                setIdPlayer(resp);
-            };
+            // const getIdPlayer = (resp: any) => {
+            //     setIdPlayer(resp);
+            // };
 
             socket.on("allPlayersAnswered", getResult);
-            socket.on("getIdPlayer", getIdPlayer);
+            // socket.on("getIdPlayer", getIdPlayer);
             return () => {
                 socket.off("allPlayersAnswered", getResult);
-                socket.off("getIdPlayer", getIdPlayer);
+                // socket.off("getIdPlayer", getIdPlayer);
                 
             };
     }, []);
@@ -74,9 +75,10 @@ const ResultController = () => {
 
     const theWinnerIs = (result:any) =>{
         const mostRepeatedName = valorMasRepetido(result);
+        console.log('idPlayer', idPlayer)
         const respPlayer = result.find((player:any) => player.id === idPlayer);
         if(mostRepeatedName.conteo > 0){
-            console.log('respPlayer.respuestas.respuesta', respPlayer.respuestas.respuesta)
+            console.log('respPlayer', respPlayer)
 
             if(respPlayer.respuestas.respuesta === mostRepeatedName.respuesta  && !hasExecuted.current){
                 //mandar 100 puntos

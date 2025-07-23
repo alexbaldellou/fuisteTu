@@ -119,7 +119,7 @@ io.on('connection', socket =>{
         if (answeredPlayers === totalPlayers) {
           const result = Object.values(rooms[partida].players);
           const count = nPreguntas;
-          io.to(partida).emit('allPlayersAnswered', { result, count });
+          io.to(partida).emit('allPlayersAnswered', { result, count, id: socket.id });
 
           // const resp = rooms[info.partida].players[socket.id].ultimaRespuesta;
           // io.to(info.partida).emit('getLastResp', resp);
