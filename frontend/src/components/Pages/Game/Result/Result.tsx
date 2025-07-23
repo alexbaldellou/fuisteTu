@@ -1,10 +1,11 @@
+import ListResult from "./ListResult";
 import ResultController from "./ResultController";
 
 const Result = () => {
-  const [playerResp, win] = ResultController();
+  const { playerResp, win, playersResp } = ResultController();
   return (
     <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
-      {playerResp ? (
+      {playerResp && playersResp.length > 0 ? (
         <>
           <h1 className="text-white font-bold text-3xl text-center">
             Y el jugador que ha tenido más votos es
@@ -19,14 +20,21 @@ const Result = () => {
               </p>
             </div>
           )}
+          {playersResp.length > 0 && (
+            <ListResult list={playersResp} />
+          )}
         </>
       ) : (
         <>
           <h1 className="text-white font-bold text-3xl text-center">
             No hubo jugador más votado, se nota que os queréis mucho
           </h1>
+          {playersResp.length > 0 && (
+            <ListResult list={playersResp} />
+          )}
         </>
       )}
+      
     </div>
   );
 };

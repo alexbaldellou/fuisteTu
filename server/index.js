@@ -69,7 +69,6 @@ io.on('connection', socket =>{
 
     socket.on('getNQuestion', ( info ) => {
         if (info) {
-          console.log('nPreguntas', nPreguntas)
           io.to(info.partida).emit('getNumberQuestion', nPreguntas);
         }
     });
@@ -93,10 +92,38 @@ io.on('connection', socket =>{
         }
     });
 
-    socket.on('saveResp', ( info ) => {
-        if (info) {
-          rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], respuestas: info.respuesta};
+    // socket.on('saveResp', ( info ) => {
+    //     if (info) {
+    //       rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], respuestas: info.respuesta};
+    //     }
+    // });
+
+    socket.on('saveResp', (info) => {
+      if (info) {
+        const partida = info.partida;
+        const preguntaId = info.respuesta.preguntaId;
+
+        rooms[partida].players[socket.id] = {
+          ...rooms[partida].players[socket.id],
+          respuestas: info.respuesta,
+        };
+    
+        if (!rooms[partida].answers) rooms[partida].answers = {};
+        if (!rooms[partida].answers[preguntaId]) rooms[partida].answers[preguntaId] = new Set();
+    
+        rooms[partida].answers[preguntaId].add(socket.id);
+    
+        const totalPlayers = Object.keys(rooms[partida].players).length;
+        const answeredPlayers = rooms[partida].answers[preguntaId].size;
+    
+        if (answeredPlayers === totalPlayers) {
+          const result = Object.values(rooms[partida].players);
+          const count = nPreguntas;
+          io.to(partida).emit('allPlayersAnswered', { result, count });
+          
+          rooms[partida].answers[preguntaId].clear();
         }
+      }
     });
 
     socket.on('saveLastResp', ( info ) => {
