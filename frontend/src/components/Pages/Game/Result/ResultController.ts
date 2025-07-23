@@ -12,7 +12,8 @@ const ResultController = () => {
     const [nextQuestion, setNextQuestion] = useState<boolean>(false);
     const [resultList, setResultList] = useState<any>([]);
     // const [idQuestion, setIdQuestion] = useState<number>(0);
-    const [lastResp, setLastResp] = useState<string>('');
+    // const [lastResp, setLastResp] = useState<string>('');
+    const [idPlayer, setIdPlayer] = useState<string>('');
     const [numberQuestion, setNumberQuestion] = useState<number>(0);
     const [playersResp, setPlayersResp] = useState<any>([]);
     const hasExecuted = useRef(false);
@@ -24,22 +25,21 @@ const ResultController = () => {
     },[win])
 
     useEffect(() => {
-            socket.emit("getLastResp", { partida });
 
             const getResult = ({ result, count }: { result: any; count: number }) => {
                 setNumberQuestion(count);
                 setResultList(result);
               };
 
-            const getLastResp = (resp: any) => {
-                setLastResp(resp);
+            const getIdPlayer = (resp: any) => {
+                setIdPlayer(resp);
             };
 
             socket.on("allPlayersAnswered", getResult);
-            socket.on("getLastResp", getLastResp);
+            socket.on("getIdPlayer", getIdPlayer);
             return () => {
                 socket.off("allPlayersAnswered", getResult);
-                socket.off("getLastResp", getLastResp);
+                socket.off("getIdPlayer", getIdPlayer);
                 
             };
     }, []);
@@ -74,15 +74,16 @@ const ResultController = () => {
 
     const theWinnerIs = (result:any) =>{
         const mostRepeatedName = valorMasRepetido(result);
+        const respPlayer = result.find((player:any) => player.id === idPlayer);
         if(mostRepeatedName.conteo > 0){
-            console.log('lastResp', lastResp)
+            console.log('respPlayer.respuestas.respuesta', respPlayer.respuestas.respuesta)
 
-            if(lastResp === mostRepeatedName.respuesta  && !hasExecuted.current){
+            if(respPlayer.respuestas.respuesta === mostRepeatedName.respuesta  && !hasExecuted.current){
                 //mandar 100 puntos
                 socket.emit("playerWinner", { partida });
                 setWin(true);
             }
-
+            
             console.log('next')
             updateNPreguntas()
             setNextQuestion(true);
