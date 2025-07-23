@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { valorMasRepetido } from "../../../Utils";
 import { useNavigate, useParams } from "react-router-dom";
 import socket from "../../../../utils/socket";
+import { useSelector } from "react-redux";
 
 const ResultController = () => {
 
@@ -13,10 +14,10 @@ const ResultController = () => {
     const [resultList, setResultList] = useState<any>([]);
     // const [idQuestion, setIdQuestion] = useState<number>(0);
     // const [lastResp, setLastResp] = useState<string>('');
-    const [idPlayer, setIdPlayer] = useState<string>('');
     const [numberQuestion, setNumberQuestion] = useState<number>(0);
     const [playersResp, setPlayersResp] = useState<any>([]);
     const hasExecuted = useRef(false);
+    const idPlayer = useSelector((state: any) => state.user);
 
     useEffect(() =>{
         if(win){
@@ -26,9 +27,8 @@ const ResultController = () => {
 
     useEffect(() => {
 
-            const getResult = ({ result, count, id }: { result: any; count: number, id:any }) => {
+            const getResult = ({ result, count }: { result: any; count: number }) => {
                 setNumberQuestion(count);
-                setIdPlayer(id);
                 setResultList(result);
               };
 

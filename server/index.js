@@ -124,8 +124,6 @@ io.on('connection', socket =>{
           // const resp = rooms[info.partida].players[socket.id].ultimaRespuesta;
           // io.to(info.partida).emit('getLastResp', resp);
 
-          io.to(info.partida).emit('getIdPlayer', socket.id);
-
           rooms[partida].answers[preguntaId].clear();
         }
       }
