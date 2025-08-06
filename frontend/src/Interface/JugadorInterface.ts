@@ -5,4 +5,5 @@ export interface JugadorInterface {
     partida:string;
     respuesta:string;
     puntos:number;
+    tipo:string;
 }

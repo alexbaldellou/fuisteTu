@@ -11,11 +11,13 @@ const CountDown = (props: CountDownProps) => {
   const time = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
+    clearInterval(time.current);
+    setCount(seconds);
     time.current = setInterval(() => {
-      setCount((seg) => seg - 1);
+      setCount(seg => seg - 1);
     }, 1000);
     return () => clearInterval(time.current);
-  }, []);
+  }, [seconds]);
 
   useEffect(() => {
     if (count <= 0) {

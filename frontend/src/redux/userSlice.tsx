@@ -4,6 +4,7 @@ const initialState = {
   id: "",
   nombre: "",
   url: "",
+  tipo: "",
 };
 
 export const userSlice = createSlice({
@@ -11,10 +12,11 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     addUser: (state, action) => {
-      const { id, nombre, url } = action.payload;
+      const { id, nombre, url, tipo } = action.payload;
       state.id = id;
       state.nombre = nombre;
       state.url = url;
+      state.tipo = tipo;
     },
     changeUser: (state, action) => {
       state.nombre = action.payload;

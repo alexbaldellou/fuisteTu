@@ -2,100 +2,93 @@ import { useEffect, useState } from "react";
 import Questions from "./Questions/Questions";
 import CountDown from "./CountDown/CountDown";
 import { useParams, useNavigate } from "react-router-dom";
-import { getNameRandom, getQuestionsRandom, getRandomInt } from "../../Utils";
-
-import quienEsMasProbable from "../../../assets/questions/quienesmasprobable.json";
-// import siJugador from "../../../assets/questions/sijugador.json";
+import { getNameRandom } from "../../Utils";
 
 import socket from "../../../utils/socket";
+import { useDispatch, useSelector } from "react-redux";
+import { addQuestions, setCurrentIndex } from "../../../redux/questionsList";
 
-//TODO: LIMITAR Nº PREGRUNTAS
 const Room = () => {
   const { partida } = useParams();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [time, setTime] = useState<number>(15);
   const [timeOut, setTimeOut] = useState<boolean>(false);
   const [response, setResponse] = useState<any>();
   const [questionsList, setQuestionsList] = useState<any>([]);
   const [indexQuestion, setIndexQuestion] = useState<number>(0);
-  const [players, setPlayers] = useState<any>([]);
+  const [isQuestionResp, setIsQuestionResp] = useState<boolean>(false);
+  const [isGoResult, setIsGoResult] = useState<boolean>(false);
   const [finish, setFinish] = useState<boolean>(false);
-  // const hasSentResponse = useRef(false);
-  useEffect(() => {
-    getListQuestion();
-  }, []);
+  const players = useSelector((state: any) => state.players.players);
+  const user = useSelector((state: any) => state.user.nombre);
 
   useEffect(() => {
     if (!partida) return;
 
+    if (finish) {
+      setFinish(true);
+    }
     socket.emit("getNQuestion", { partida });
-
-    const getPlayersList = (playersList: any) => {
-      setPlayers(playersList);
-    };
-
+    socket.emit("getQuestionsList", { partida});
+ 
     const getQuestionsList = (questions: any) => {
-      setQuestionsList(questions);
-    };
-    const questionSelected = (questionId: any) => {
-      setIndexQuestion(questionId);
+      setIndexQuestion(questions.numRandom);
+      setQuestionsList(questions.questionsList);
     };
 
-    socket.on("questionStart", questionSelected);
-
-    socket.on("playersList", getPlayersList);
     socket.on("getQuestionsList", getQuestionsList);
-
+    
     return () => {
-      socket.off("questionStart", questionSelected);
-      socket.off("playersList", getPlayersList);
       socket.off("getQuestionsList", getQuestionsList);
     };
   }, []);
-
+  
   useEffect(() => {
-    //funciina
-    // if (response && timeOut && !hasSentResponse.current) {
-    //   sendResponse(response);
-    //   hasSentResponse.current = true;
-    // }
     if (response) {
       sendResponse(response);
     }
 
-    if (response && timeOut) {
+    if (response && timeOut && !isQuestionResp) {
+      setTime(15);
+      setTimeOut(false);
+      setIsQuestionResp(true);
+    }
+
+    if (response && timeOut && isGoResult) {
       goResult();
-      // hasSentResponse.current = true;
     }
-  }, [response, timeOut]);
+  }, [response, timeOut, isQuestionResp]);
 
-  const getListQuestion = async () => {
-    const questionsListWho = getQuestionsRandom(quienEsMasProbable.preguntas);
-    //TODO: CONCADENAR TIPO RESPUESTA
-    // const questionsListIf = getQuestionsRandom(siJugador.preguntas);
-    // const list = questionsListWho.concat(questionsListIf);
-    const list = questionsListWho;
-
-    if (finish) {
-      setFinish(true);
+  useEffect(() => {
+    if (players && players.length > 0) {
+      getTheNameRandom()
     }
-    const numRandom = getRandomInt(list.length);
+  }, [players]);
 
-    socket.emit("questionChoose", { partida, numRandom });
-    socket.emit("questionsList", { partida, list });
-  };
+  useEffect(() => {
+    if (questionsList.length > 0) {
+      dispatch(addQuestions(questionsList));
+    }
+  }, [questionsList]);
 
-  //TODO: PROBAR QUIEN SERIA
+  useEffect(() => {
+    dispatch(setCurrentIndex(indexQuestion));
+  }, [indexQuestion, dispatch]);
+
+  const getTheNameRandom = async() => {
+    const nameRandom = await getNameRandom(players);
+      socket.emit("nameRandom", { partida, nameRandom });
+  }
+
   const sendResponse = (resp: any) => {
     if (resp) {
-      const nameRandom = getNameRandom(players);
-      socket.emit("nameRandom", { partida, nameRandom });
-
       switch (resp.type) {
         case "QUIEN_SERIA":
           sendResponseWhoIsPlayer(resp.resp);
           break;
         case "RESPUESTA":
-          // sendResponseResp(user, resp);
+          sendResponseResp(user, resp);
           break;
       }
     }
@@ -110,24 +103,54 @@ const Room = () => {
       preguntaId: indexQuestion || 0,
       respuesta: resp,
     };
-
-    socket.emit("saveLastResp", { partida, respuesta });
+    console.log('respuesta', respuesta);
+    // socket.emit("saveLastResp", { partida, respuesta });
     socket.emit("saveResp", { partida, respuesta });
-    // navigate(`/resultado/${partida}`);
+    setIsQuestionResp(false);
   };
 
+  const sendResponseResp = (user: string, resp: string) => {
+    const respuesta = {
+      preguntaId: indexQuestion || 0,
+      jugador: user,
+      respuesta: resp,
+    };
+    
+    socket.emit("saveQuestionResp", { partida, respuesta });
+  };
+
+  const onIsResp = (resp: boolean) => {
+    if(resp) setTime(30);
+  }
   return (
     <>
+    {!isQuestionResp ? (
       <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
-        <CountDown seconds={15} onTimeOut={setTimeOut} />
+        <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
         <Questions
-          timeOut={timeOut}
           onResponse={setResponse}
           questionsList={questionsList}
           numRandom={indexQuestion}
           questionId={indexQuestion}
+          isQuestionResp={isQuestionResp}
+          onIsResp={onIsResp}
+          onGoResult={setIsGoResult}
         />
       </div>
+   ) : (
+    <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
+        <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
+        <Questions
+          onResponse={setResponse}
+          questionsList={questionsList}
+          numRandom={indexQuestion}
+          questionId={indexQuestion}
+          isQuestionResp={isQuestionResp}
+          onIsResp={onIsResp} 
+          onGoResult={setIsGoResult}
+        />
+      </div>
+  )}
     </>
   );
 };

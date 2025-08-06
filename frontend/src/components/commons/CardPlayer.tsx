@@ -6,10 +6,11 @@ interface CardPlayerInterface {
   player: JugadorInterface;
   click?: (id: any) => void;
   playerSelected?: string;
+  isQuestionResp?: boolean;
   onChoosePlayer?: (player: string) => void;
 }
 const CardPlayer = (props: CardPlayerInterface) => {
-  const { player, click, playerSelected, onChoosePlayer } = props;
+  const { player, click, playerSelected, onChoosePlayer, isQuestionResp } = props;
   const isActive = playerSelected === player.nombre;
 
   useEffect(() => {
@@ -28,16 +29,22 @@ const CardPlayer = (props: CardPlayerInterface) => {
         onClick={() => click && click(player.nombre)}
       >
         <div className="flex items-center">
-          <Avatar
-            isBordered
-            color="default"
-            src={player.url}
-            className="w-20 h-20 text-large mr-7"
-          />
-          <div>
+          {isQuestionResp ?
             <h3 className="text-white font-bold text-xl">{player.nombre}</h3>
-            <p className="text-white font-bold text-2xl">{player.puntos} PTS</p>
-          </div>
+          :
+            <>
+              <Avatar
+                isBordered
+                color="default"
+                src={player.url}
+                className="w-20 h-20 text-large mr-7"
+              />
+              <div>
+                <h3 className="text-white font-bold text-xl">{player.nombre}</h3>
+                <p className="text-white font-bold text-2xl">{player.puntos} PTS</p>
+              </div>
+            </>
+          }
         </div>
       </div>
     </>

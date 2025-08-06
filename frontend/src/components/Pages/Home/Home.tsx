@@ -6,10 +6,13 @@ import { urlDefault } from "../../../config";
 import { RegisterPlayer } from "../Player/RegisterPlayer";
 import socket from "../../../utils/socket";
 import { JugadorInterface } from "../../../Interface/JugadorInterface";
-import { getNameRandom } from "../../Utils";
+import { getNameRandom, getPreguntas } from "../../Utils";
+import { useDispatch } from "react-redux";
+import { addQuestions } from "../../../redux/questionsList";
 
 const Home = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { id, typePlayer } = useParams();
   const [url, setUrl] = useState("");
   const [nPreguntas, setNPreguntas] = useState(2);
@@ -19,7 +22,7 @@ const Home = () => {
     {} as JugadorInterface
   );
   const [players, setPlayers] = useState<any>([]);
-  // const [isStartGame, setIsStartGame] = useState<boolean>(false);
+  const [preguntasList, setPreguntasList] = useState<any>([]);
 
   useEffect(() => {
     if (id) {
@@ -30,6 +33,8 @@ const Home = () => {
   useEffect(() => {
     if (!id) return;
 
+    setPreguntasList(getPreguntas());
+
     const handleUpdate = (playersList: any) => {
       setPlayers(playersList);
     };
@@ -37,7 +42,6 @@ const Home = () => {
     socket.on("playersInRoom", handleUpdate);
 
     const handleIsStartGame = (isStart: any) => {
-      // setIsStartGame(isStart);
       if (isStart) {
         navigate(`/sala/${id}`);
       }
@@ -57,12 +61,27 @@ const Home = () => {
     }
   }, [id, jugador]);
 
+  useEffect(() => {
+    if (typePlayer === "host" && preguntasList.length > 0 && players.length > 0) {
+      const preguntasListRandom = preguntasList.map((question: any) => {
+        const nameRandom = getNameRandom(players);
+        if(question.includes("%jugador%")){
+
+          return {question: question.replace("%jugador%", nameRandom), type: 'RESPUESTA'};
+        }
+        return {question: question, type: 'QUIEN_SERIA'};
+      });
+      socket.emit("questionsList", { partida: id, list: preguntasListRandom });
+      dispatch(addQuestions(preguntasListRandom));
+    }
+  }, [preguntasList, players]);
+
   const empezarPartida = () => {
     if (id) {
       const nameRandom = getNameRandom(players);
       socket.emit("startGame", { id: id, status: true });
       socket.emit("nameRandom", { id, nameRandom });
-      socket.emit("setNumberQuestion", { id, nPreguntas }); //guarda más de una vez
+      socket.emit("setNumberQuestion", { id, nPreguntas });
     }
   };
 
@@ -74,7 +93,7 @@ const Home = () => {
   return (
     <div className="pt-48 md:pt-0 md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500 flex justify-center items-center flex-col">
       <div className="md:flex md:flex-row md:w-3/6">
-        <div className="md:w-1/2">
+        <div className="mx-3 md:mx-0 md:w-1/2">
           <RegisterPlayer
             partidaId={id || ""}
             onChangePlayer={setJugador}

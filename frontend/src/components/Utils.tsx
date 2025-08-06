@@ -1,3 +1,6 @@
+import quienEsMasProbable from "../assets/questions/quienesmasprobable.json";
+import siJugador from "../assets/questions/sijugador.json";
+
 export const generarID = () => {
   return Math.random().toString(32).substring(2);
 };
@@ -7,6 +10,14 @@ export const getRandomInt = (max: number) => {
 };
 
 export const valorMasRepetido = (respuestas: any) => {
+
+  if (
+    respuestas.length === 2 &&
+    respuestas[0].respuesta !== respuestas[1].respuesta
+  ) {
+    return { respuesta: null, conteo: 0 };
+  }
+  
   const conteo: any = {};
 
   respuestas.forEach((r: any) => {
@@ -43,5 +54,15 @@ export const getQuestionsRandom = (questions: any) => {
 };
 
 export const getNameRandom = (players: any[]) => {
-  return players[Math.floor(Math.random() * players.length)];
+  const nameRand = players[Math.floor(Math.random() * players.length)];
+  const name = nameRand ? nameRand.nombre : "";
+  return name;
+};
+
+export const getPreguntas = () => {
+  const questionsListWho = getQuestionsRandom(quienEsMasProbable.preguntas);
+    //TODO: CONCADENAR TIPO RESPUESTA
+    const questionsListIf = getQuestionsRandom(siJugador.preguntas);
+    const list = questionsListWho.concat(questionsListIf);
+    return list;
 };

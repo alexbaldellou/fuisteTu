@@ -28,7 +28,6 @@ const Player = () => {
 
   useEffect(() => {
     if (isSave) {
-      console.log("Nuevo registro");
       socket.emit("register", { partida, jugador });
     }
   }, [partida, jugador]);

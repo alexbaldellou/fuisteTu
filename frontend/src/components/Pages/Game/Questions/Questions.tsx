@@ -5,68 +5,84 @@ import socket from "../../../../utils/socket";
 import { useParams } from "react-router-dom";
 
 interface QuestionsProps {
-  timeOut: boolean;
   numRandom?: number;
   questionId: number;
   questionsList: any[];
   onResponse: (resp: any) => void;
+  onIsResp: (resp: any) => void;
+  onGoResult: (resp: any) => void;
+  isQuestionResp: boolean;
 }
 
 const Questions = (props: QuestionsProps) => {
-  const { timeOut, onResponse, questionId, questionsList } = props;
+  const { onResponse, questionId, questionsList, isQuestionResp, onIsResp, onGoResult } = props;
   const { partida } = useParams();
   const [choosePlayer, setChoosePlayer] = useState<string>("");
   const [respChoose, setRespChoose] = useState<string>("");
-  const [nameRandom, setNameRandom] = useState<string>("");
   const [question, setQuestion] = useState<string>("");
+  const [questionText, setQuestionText] = useState<string>("");
   const [players, setPlayers] = useState<any>([]);
+  const [questionsListResp, setQuestionsListResp] = useState<any>([]);
 
   useEffect(() => {
     socket.emit("playersList", { partida });
-
-    const getNameRandom = (name: any) => {
-      setNameRandom(name);
-    };
 
     const getPlayersList = (playersList: any) => {
       setPlayers(playersList);
     };
 
-    socket.on("getNameRandom", getNameRandom);
+    const getQuestionsListResp = (questionsListResp: any) => {
+      setQuestionsListResp(questionsListResp);
+    };
+
     socket.on("getPlayersList", getPlayersList);
+    socket.on("getQuestionsListResp", getQuestionsListResp);
+    return () => {
+      socket.off("getPlayersList", getPlayersList);
+    };
   }, []);
+
+  useEffect(() => {
+   
+      if (questionId && questionsList.length > 0) {
+        const textQuestion = questionsList.find((_, i) => i === questionId);
+        if (textQuestion.type === 'RESPUESTA') {
+          setQuestionText(textQuestion.question);
+          onIsResp(true);
+        }else{
+          onIsResp(false);
+          setQuestion(textQuestion.question);
+        }
+      }
+    
+  }, [questionId, questionsList]);
 
   useEffect(() => {
     if (choosePlayer || respChoose) {
       if (choosePlayer) {
+        onGoResult(true);
         onResponse({ resp: choosePlayer, type: "QUIEN_SERIA" });
       } else if (respChoose) {
+        onGoResult(false);
         const choose = respChoose || "";
-        onResponse({ resp: choose, type: "RESPUESTA" });
+        onResponse({ nombre: choose, type: "RESPUESTA" });
       }
     }
   }, [choosePlayer, respChoose]);
 
   useEffect(() => {
-    if (players.length > 0) {
-      setQuestion(questionsList.find((_, i) => i === questionId));
+    if (isQuestionResp) {
+      setQuestionText('');
     }
-  }, [players]);
-
-  useEffect(() => {
-    if (questionId && questionsList.length > 0) {
-      setQuestion(questionsList.find((_, i) => i === questionId));
-    }
-  }, [questionId, questionsList]);
-
+  }, [isQuestionResp]);
+  
   return (
     <div className="bg-white/10 border-white/10 shadow-sm w-9/12 rounded-3xl">
       <form className="flex flex-col justify-center gap-4 items-center my-10">
-        {question && question.includes("%jugador%") ? (
+        {questionText !== "" ? (
           <ResponseQuestion
-            question={question || ""}
+            question={questionText}
             onChooseResp={setRespChoose}
-            nameRandom={nameRandom}
           />
         ) : (
           <WhoIsQuestion
@@ -75,7 +91,7 @@ const Questions = (props: QuestionsProps) => {
             playerList={players}
             player={choosePlayer}
             onChoosePlayer={setChoosePlayer}
-            timeOut={timeOut}
+            questionsListResp={questionsListResp}
           />
         )}
       </form>

@@ -4,7 +4,6 @@ interface ListResultProps {
 }
 const ListResult = (props: ListResultProps) => {
     const { list } = props;
-    console.log('list', list)
   return (
   <>
   <div className="text-2xl font-bold text-center text-white my-4">Quién votó a quién:</div>

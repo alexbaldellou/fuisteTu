@@ -19,6 +19,12 @@ app.get("/", (req, res) => {
 
 const rooms = {};
 let nPreguntas = 0;
+let numQuestion = 0;
+let nameRandom = '';
+let maxQuestion = 0;
+let numRandom = 0;
+let questionsList = [];
+let questionsListResp = [];
 
 io.on('connection', socket =>{
     console.log('client connected', socket.id)
@@ -57,7 +63,9 @@ io.on('connection', socket =>{
 
     socket.on('nameRandom', ( info ) => {
         if (info) {
-          io.to(info.partida).emit('getNameRandom', info.numRandom);
+          const partida = info.partida;
+          nameRandom = info.nameRandom;
+          io.to(partida).emit('getNameRandom', nameRandom);
         }
     });
 
@@ -75,28 +83,80 @@ io.on('connection', socket =>{
 
     socket.on('questionsList', ( info ) => {
         if (info) {
-          io.to(info.partida).emit('getQuestionsList', info.list);
+          maxQuestion = info.list.length;
+          questionsList = info.list;
+          // io.to(partida).emit('getQuestionsList', info.list, numRandom);
+          numRandom = Math.floor(Math.random() * info.list.length);
         }
+    });
+
+    socket.on('getQuestionsList', ( info ) => {
+      if (info) {
+        // const numRandom = Math.floor(Math.random() * questionsList.length);
+        io.to(info.partida).emit('getQuestionsList', {questionsList, numRandom});
+      }
+    });
+
+    socket.on('getQuestionChoose', ( info ) => {
+      if (info) {
+        console.log('numRandom', numRandom);
+        io.to(info.partida).emit('getIdQuestion', numRandom);
+      }
     });
 
     socket.on('questionChoose', ( info ) => {
         if (info) {
-          rooms[info.partida] = {...rooms[info.partida], currentQuestionIndex: info.numRandom};
-          io.to(info.partida).emit('questionStart', info.numRandom);
+          numQuestion = info.numRandom;
+          console.log('numQuestion', numQuestion);
+          io.to(info.partida).emit('questionStart', numQuestion);
         }
     });
+
+    socket.on('saveQuestionResp', ( info ) => {
+      if (info) {
+        const partida = info.partida;
+
+        rooms[partida].players[socket.id] = {
+          ...rooms[partida].players[socket.id],
+          respuestaSiFuera: info.respuesta,
+        };
+        io.to(info.partida).emit('getQuestionsListResp', Object.values(rooms[partida].players));
+      }
+    });
+
+    // socket.on('setMaxQuestion', ( info ) => {
+    //   if (info) {
+    //     maxQuestion = info.max;
+    //     const partida = info.partida;
+    //     const numRandom = Math.floor(Math.random() * maxQuestion);
+    //     io.to(partida).emit('getQuestionChoose', numRandom);
+    //   }
+    // });
+
+    // socket.on('getMaxQuestion', ( info ) => {
+    //   if (info) {
+    //     const partida = info.partida;
+    //     const numRandom = Math.floor(Math.random() * maxQuestion);
+    //     io.to(partida).emit('getQuestionChoose', numRandom);
+    //     // socket.emit('getQuestionChoose', numRandom);
+
+    //     io.to(partida).emit('getMaxQuestion', maxQuestion);
+    //   }
+    // });
+
 
     socket.on('questionChoosed', ( info ) => {
         if (info) {
-          io.to(info.partida).emit('getQuestionChoosed', rooms[info.partida].currentQuestionIndex);
+          io.to(info.partida).emit('getQuestionChoosed', numQuestion);
         }
     });
 
-    // socket.on('saveResp', ( info ) => {
-    //     if (info) {
-    //       rooms[info.partida].players[socket.id] = {...rooms[info.partida].players[socket.id], respuestas: info.respuesta};
-    //     }
-    // });
+    socket.on('getNameQuestion', ( info ) => {
+        if (info) {
+          const partida = info.partida;
+          io.to(partida).emit('getTheNameRandom', nameRandom);
+        }
+    });
 
     socket.on('saveResp', (info) => {
       if (info) {
@@ -120,7 +180,6 @@ io.on('connection', socket =>{
           const result = Object.values(rooms[partida].players);
           const count = nPreguntas;
           io.to(partida).emit('allPlayersAnswered', { result, count, id: socket.id });
-
           // const resp = rooms[info.partida].players[socket.id].ultimaRespuesta;
           // io.to(info.partida).emit('getLastResp', resp);
 
@@ -153,6 +212,7 @@ io.on('connection', socket =>{
     socket.on('playerWinner', ( info ) => {
         if (info) {
           const player = rooms[info.partida].players[socket.id]
+          console.log('player', player);
           rooms[info.partida].players[socket.id] = {...player, puntos: player.puntos + 100};
         }
     });
@@ -163,14 +223,41 @@ io.on('connection', socket =>{
         }
     });
 
+    socket.on('getCurrentResult', (info) => {
+        if (info) {
+            const partida = info.partida;
+            const preguntaId = info.preguntaId;
+            console.log('preguntaId', preguntaId)
+            console.log('rooms[partida]', rooms[partida])
+        
+            if (
+                rooms[partida] &&
+                rooms[partida].lastResults &&
+                rooms[partida].lastResults[preguntaId]
+            ) {
+                socket.emit('allPlayersAnswered', rooms[partida].lastResults[preguntaId]);
+            } else if (rooms[partida] && rooms[partida].lastResults) {
+                // Enviar el último resultado disponible si no se encuentra el exacto
+                const allIds = Object.keys(rooms[partida].lastResults);
+                if (allIds.length > 0) {
+                    const lastId = allIds[allIds.length - 1];
+                    socket.emit('allPlayersAnswered', rooms[partida].lastResults[lastId]);
+                }
+            }
+        }
+    });
+
     socket.on('disconnect', () => {
         for (const roomId in rooms) {
             const room = rooms[roomId];
             if (room.players[socket.id]) {
-            delete room.players[socket.id];
-            delete room.answers[socket.id];
-
-            io.to(roomId).emit('playersInRoom', Object.values(room.players));
+                delete room.players[socket.id];
+                if (room.answers) {
+                    for (const preguntaId in room.answers) {
+                        room.answers[preguntaId].delete(socket.id);
+                    }
+                }
+                io.to(roomId).emit('playersInRoom', Object.values(room.players));
             }
         }
     });

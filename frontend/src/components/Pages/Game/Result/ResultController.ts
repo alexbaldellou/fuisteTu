@@ -18,6 +18,9 @@ const ResultController = () => {
     const [playersResp, setPlayersResp] = useState<any>([]);
     const hasExecuted = useRef(false);
     const idPlayer = useSelector((state: any) => state.user);
+    const preguntasList = useSelector((state: any) => state.questionsList.list);
+    const typePlayer = useSelector((state: any) => state.user.tipo);
+    const currentQuestionIndex = useSelector((state: any) => state.questionsList.currentIndex);
 
     useEffect(() =>{
         if(win){
@@ -25,34 +28,40 @@ const ResultController = () => {
         }
     },[win])
 
+    //TODO: revisar porque hay usuarios que no llegan a la respuesta
     useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+        const getResult = ({ result, count }: { result: any; count: number }) => {
+            console.log('DEBUG: Evento allPlayersAnswered recibido', { result, count });
+            setNumberQuestion(count);
+            setResultList(result);
+            clearTimeout(timeoutId);
+        };
+        socket.on("allPlayersAnswered", getResult);
+        // Si en 2 segundos no se recibe el resultado, pedirlo manualmente
+        timeoutId = setTimeout(() => {
+            if (resultList.length === 0 && partida && preguntasList.length > 0) {
+                console.log('preguntasList', preguntasList)
+                const preguntaId = preguntasList[currentQuestionIndex] || 0;
+                console.log('DEBUG preguntaId usado para getCurrentResult:', preguntaId);
+                socket.emit('getCurrentResult', { partida, preguntaId });
+            }
+        }, 2000);
+        return () => {
+            socket.off("allPlayersAnswered", getResult);
+            clearTimeout(timeoutId);
+        };
+    }, [preguntasList, typePlayer, currentQuestionIndex]);
 
-            const getResult = ({ result, count }: { result: any; count: number }) => {
-                setNumberQuestion(count);
-                setResultList(result);
-              };
-
-            // const getIdPlayer = (resp: any) => {
-            //     setIdPlayer(resp);
-            // };
-
-            socket.on("allPlayersAnswered", getResult);
-            // socket.on("getIdPlayer", getIdPlayer);
-            return () => {
-                socket.off("allPlayersAnswered", getResult);
-                // socket.off("getIdPlayer", getIdPlayer);
-                
-            };
-    }, []);
-
+    console.log('resultList', resultList);
     useEffect(() =>{
         if(resultList.length > 0){
-            console.log('resultList', resultList)
             const allResponse = resultList.map((player:any) => {
                 const responsePlayer = {...player.respuestas, jugador: player.nombre, url: player.url}
                 return responsePlayer;
             });
             setPlayersResp(allResponse)
+
             if(numberQuestion > 0){
                 theWinnerIs(allResponse)
             }else{
@@ -66,6 +75,12 @@ const ResultController = () => {
     }, [resultList, numberQuestion])
 
     useEffect(() => {
+        if (preguntasList.length > 0 && typePlayer === "host") {
+          socket.emit("questionsList", { partida, list: preguntasList });
+        }
+      }, [preguntasList]);
+
+    useEffect(() => {
         if (nextQuestion) {
             setTimeout(() => {
                 navigate(`/sala/${partida}`);
@@ -75,10 +90,7 @@ const ResultController = () => {
 
     const theWinnerIs = (result:any) =>{
         const mostRepeatedName = valorMasRepetido(result);
-        console.log('idPlayer', idPlayer)
-        console.log('result', result)
         const respPlayer = result.find((player:any) => player.jugador === idPlayer.nombre);
-        console.log('respPlayer', respPlayer)
         if(mostRepeatedName.conteo > 0){
             if(respPlayer.respuesta === mostRepeatedName.respuesta  && !hasExecuted.current){
                 //mandar 100 puntos
@@ -90,8 +102,10 @@ const ResultController = () => {
             updateNPreguntas()
             setNextQuestion(true);
             setPlayerResp(mostRepeatedName.respuesta)
+        }else{
+            setNextQuestion(true);
         }
-        socket.emit("saveLastResp", { partida, respuesta: {respuesta: ''} });
+        // socket.emit("saveLastResp", { partida, respuesta: {respuesta: ''} });
     
         
     }

@@ -1,9 +1,7 @@
-// import { useEffect, useState } from "react";
 import { Avatar } from "@nextui-org/react";
-// import { playersService } from "../../../services/allService";
-// import { useParams } from "react-router-dom";
-// import socket from "../../../utils/socket";
-// import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { addPlayers } from "../../../redux/playersSlice";
 
 interface ListPlayersProps {
   partida?: string;
@@ -11,37 +9,13 @@ interface ListPlayersProps {
 }
 const ListPlayers = (props: ListPlayersProps) => {
   const { playersList } = props;
-  // const { roomId } = useParams();
-  // const [players, setPlayers] = useState<any>([]);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   // if (!partida) return;
-
-  //   // Unirse a la sala si aún no estamos
-  //   socket.emit("getPlayersInRoom", partida);
-
-  //   socket.on("playersInRoom", (playersList) => {
-  //     console.log("playersList: ", playersList);
-  //     setPlayers(playersList);
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   if (!roomId) return;
-
-  //   // Unirse a la sala (esto puede estar en otro componente también)
-  //   socket.emit("register", { roomId, username: "Jugador" + socket.id });
-
-  //   const handleUpdate = (playersList: any) => {
-  //     setPlayers(playersList);
-  //   };
-
-  //   socket.on("playersInRoom", handleUpdate);
-
-  //   return () => {
-  //     socket.off("playersInRoom", handleUpdate);
-  //   };
-  // }, [roomId]);
+  useEffect(() => {
+    if(playersList && playersList.length > 0) {
+      dispatch(addPlayers(playersList));
+    }
+  }, [playersList])
 
   return (
     <>

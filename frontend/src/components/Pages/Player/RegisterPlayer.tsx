@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addUser } from "../../../redux/userSlice";
 import { Avatars } from "./Avatars";
+import { useParams } from "react-router-dom";
 
 interface LoginPlayerInter {
   onChangePlayer?: (pl: JugadorInterface) => void;
@@ -14,6 +15,7 @@ interface LoginPlayerInter {
 export const RegisterPlayer = (props: LoginPlayerInter) => {
   const dispatch = useDispatch();
   const id = generarID();
+  const { typePlayer } = useParams();
   const { partidaId, onChangePlayer, onSave } = props;
   const [jugador, setJugador] = useState<JugadorInterface>(
     {} as JugadorInterface
@@ -43,6 +45,7 @@ export const RegisterPlayer = (props: LoginPlayerInter) => {
       url: avatar,
       partida: partidaId,
       puntos: 0,
+      tipo: typePlayer,
     } as JugadorInterface;
 
     setJugador(infoJugador);

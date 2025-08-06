@@ -1,30 +1,29 @@
 import { Input } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 
 interface ResponseQuestionProps {
   question: string;
-  nameRandom: string;
   onChooseResp: (e: string) => void;
 }
 const ResponseQuestion = (props: ResponseQuestionProps) => {
-  const { question, onChooseResp, nameRandom } = props;
+  const { question, onChooseResp } = props;
+  
   const [response, setResponse] = useState<string>("");
-  const [resp, setResp] = useState<string>("");
-  const typeUser = localStorage.getItem("typeUser");
 
   useEffect(() => {
-    if (nameRandom) {
-      setResp(question.replace("%jugador%", nameRandom));
+    if(response){
+      onChooseResp(response);
     }
-  }, [nameRandom]);
-
+  }, [response]);
+  
   return (
-    <div>
-      <h3 className="text-white font-bold text-3xl text-center my-10">
-        {resp}
-      </h3>
-      {typeUser === "player" && (
-        <div className="w-9/12 m-auto">
+    <div className="w-full">
+      {question && (
+        <>
+        <h3 className="text-white font-bold text-3xl text-center my-10">
+          {question}
+        </h3>
+        <div className="flex gap-3 w-full p-3">
           <Input
             type="text"
             id={"quien"}
@@ -40,10 +39,12 @@ const ResponseQuestion = (props: ResponseQuestionProps) => {
               ],
             }}
             onChange={(resp) => {
-              setResponse(resp.target.value), onChooseResp(resp.target.value);
+              setResponse(resp.target.value);
             }}
           />
+          {/* <button className="bg-purple-500 text-white p-2 rounded-md" onClick={() => onChooseResp(response)}>Enviar</button> */}
         </div>
+        </>
       )}
     </div>
   );
