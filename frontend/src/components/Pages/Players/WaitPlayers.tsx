@@ -30,7 +30,6 @@ const WaitPlayers = (props: WaitPlayersProps) => {
     const infoPartida = await gameService.getPartida(idPartida);
     const info = infoPartida.data() || {};
     if (info.status) {
-      // navigate(`/locura/${idPartida}`);
       navigate(`/sala/${idPartida}`);
     }
   };

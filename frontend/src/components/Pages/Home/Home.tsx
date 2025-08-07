@@ -62,14 +62,20 @@ const Home = () => {
   }, [id, jugador]);
 
   useEffect(() => {
-    if (typePlayer === "host" && preguntasList.length > 0 && players.length > 0) {
+    if (
+      typePlayer === "host" &&
+      preguntasList.length > 0 &&
+      players.length > 0
+    ) {
       const preguntasListRandom = preguntasList.map((question: any) => {
         const nameRandom = getNameRandom(players);
-        if(question.includes("%jugador%")){
-
-          return {question: question.replace("%jugador%", nameRandom), type: 'RESPUESTA'};
+        if (question.includes("%jugador%")) {
+          return {
+            question: question.replace("%jugador%", nameRandom),
+            type: "RESPUESTA",
+          };
         }
-        return {question: question, type: 'QUIEN_SERIA'};
+        return { question: question, type: "QUIEN_SERIA" };
       });
       socket.emit("questionsList", { partida: id, list: preguntasListRandom });
       dispatch(addQuestions(preguntasListRandom));
@@ -92,24 +98,24 @@ const Home = () => {
 
   return (
     <div className="pt-48 md:pt-0 md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500 flex justify-center items-center flex-col">
-      <div className="md:flex md:flex-row md:w-3/6">
-        <div className="mx-3 md:mx-0 md:w-1/2">
+      <div className="w-5/6 md:flex md:flex-row md:w-3/6">
+        <div className="md:mx-0 md:w-1/2">
           <RegisterPlayer
             partidaId={id || ""}
             onChangePlayer={setJugador}
             onSave={setIsSave}
           />
         </div>
-        <div className="md:w-1/2">
+        <div className="mt-3 md:mt-0 md:mx-0 md:w-1/2">
           <ListPlayers playersList={players} />
         </div>
       </div>
       {typePlayer === "host" && (
         <>
-          <div className="flex flex-row w-3/6 mt-3">
+          <div className="w-5/6 md:flex md:flex-row md:w-3/6 mt-3">
             <div className="w-full">
               <div className="p-7 rounded-3xl bg-white flex text-xl font-medium">
-                <div className="w-1/2 ">
+                <div className="w-1/2">
                   <p className="mr-3">Nº preguntas</p>
                   <select
                     onChange={(n) => setNPreguntas(Number(n.target.value))}

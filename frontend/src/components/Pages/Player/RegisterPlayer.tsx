@@ -23,6 +23,7 @@ export const RegisterPlayer = (props: LoginPlayerInter) => {
   const [hideButton, setHideButton] = useState<boolean>(false);
   const [nombreJugador, setNombreJugador] = useState<string>("");
   const [avatar, setAvatar] = useState<any>();
+  const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
     if (jugador.nombre) {
@@ -32,6 +33,12 @@ export const RegisterPlayer = (props: LoginPlayerInter) => {
       }
     }
   }, [jugador]);
+
+  useEffect(() => {
+    if (nombreJugador !== "") {
+      setError(false);
+    }
+  }, [nombreJugador]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -52,6 +59,10 @@ export const RegisterPlayer = (props: LoginPlayerInter) => {
   };
 
   const readyPlayer = () => {
+    if (!nombreJugador) {
+      setError(true);
+      return;
+    }
     onSave(true);
     setHideButton(true);
   };
@@ -68,11 +79,18 @@ export const RegisterPlayer = (props: LoginPlayerInter) => {
         id={"jugador"}
         label="Quién eres"
         placeholder="Escribe tu nombre"
-        className="mb-3"
+        className={`${error ? "" : "mb-3"}`}
         readOnly={hideButton}
         value={nombreJugador}
         onChange={(e) => setNombreJugador(e.target.value)}
+        required
       />
+      {error && (
+        <p className="mb-3 ml-3 text-purple-800 font-bold">
+          * Corres tanto que se te olvidó escribir tu nombre
+        </p>
+      )}
+      <p></p>
       <Input
         key={"primary"}
         type="submit"

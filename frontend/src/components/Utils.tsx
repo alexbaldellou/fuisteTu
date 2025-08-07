@@ -10,14 +10,13 @@ export const getRandomInt = (max: number) => {
 };
 
 export const valorMasRepetido = (respuestas: any) => {
-
   if (
     respuestas.length === 2 &&
     respuestas[0].respuesta !== respuestas[1].respuesta
   ) {
     return { respuesta: null, conteo: 0 };
   }
-  
+
   const conteo: any = {};
 
   respuestas.forEach((r: any) => {
@@ -25,7 +24,6 @@ export const valorMasRepetido = (respuestas: any) => {
     conteo[resp] = (conteo[resp] || 0) + 1;
   });
 
-  // Buscar la respuesta con mayor conteo
   let maxRespuesta: string | null = null;
   let maxConteo: number = 0;
 
@@ -61,8 +59,7 @@ export const getNameRandom = (players: any[]) => {
 
 export const getPreguntas = () => {
   const questionsListWho = getQuestionsRandom(quienEsMasProbable.preguntas);
-    //TODO: CONCADENAR TIPO RESPUESTA
-    const questionsListIf = getQuestionsRandom(siJugador.preguntas);
-    const list = questionsListWho.concat(questionsListIf);
-    return list;
+  const questionsListIf = getQuestionsRandom(siJugador.preguntas);
+  const list = questionsListWho.concat(questionsListIf);
+  return list;
 };

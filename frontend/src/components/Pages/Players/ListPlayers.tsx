@@ -12,14 +12,14 @@ const ListPlayers = (props: ListPlayersProps) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(playersList && playersList.length > 0) {
+    if (playersList && playersList.length > 0) {
       dispatch(addPlayers(playersList));
     }
-  }, [playersList])
+  }, [playersList]);
 
   return (
     <>
-      <div className="bg-white/10 border-white/10 shadow-sm flex-column  rounded-3xl flex-wrap  h-full p-3 ml-3">
+      <div className="bg-white/10 border-white/10 shadow-sm flex-column  rounded-3xl flex-wrap  h-full p-3 md:ml-3">
         <h3 className="text-white font-bold text-3xl text-center mb-10">
           Los panas que no tienen miedo al éxito
         </h3>

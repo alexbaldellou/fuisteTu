@@ -6,7 +6,7 @@ import { getNameRandom } from "../../Utils";
 
 import socket from "../../../utils/socket";
 import { useDispatch, useSelector } from "react-redux";
-import { addQuestions, setCurrentIndex } from "../../../redux/questionsList";
+import { addQuestions } from "../../../redux/questionsList";
 
 const Room = () => {
   const { partida } = useParams();
@@ -72,10 +72,6 @@ const Room = () => {
     }
   }, [questionsList]);
 
-  useEffect(() => {
-    dispatch(setCurrentIndex(indexQuestion));
-  }, [indexQuestion, dispatch]);
-
   const getTheNameRandom = async () => {
     const nameRandom = await getNameRandom(players);
     socket.emit("nameRandom", { partida, nameRandom });
@@ -124,7 +120,7 @@ const Room = () => {
   return (
     <>
       {!isQuestionResp ? (
-        <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
+        <div className="w-full min-h-screen flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
           <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
           <Questions
             onResponse={setResponse}
@@ -137,7 +133,7 @@ const Room = () => {
           />
         </div>
       ) : (
-        <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
+        <div className="w-full min-h-screen flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
           <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
           <Questions
             onResponse={setResponse}
