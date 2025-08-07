@@ -105,21 +105,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("getQuestionChoose", (info) => {
-    if (info) {
-      console.log("numRandom", numRandom);
-      io.to(info.partida).emit("getIdQuestion", numRandom);
-    }
-  });
-
-  socket.on("questionChoose", (info) => {
-    if (info) {
-      numQuestion = info.numRandom;
-      console.log("numQuestion", numQuestion);
-      io.to(info.partida).emit("questionStart", numQuestion);
-    }
-  });
-
   socket.on("saveQuestionResp", (info) => {
     if (info) {
       const partida = info.partida;
@@ -132,19 +117,6 @@ io.on("connection", (socket) => {
         "getQuestionsListResp",
         Object.values(rooms[partida].players)
       );
-    }
-  });
-
-  socket.on("questionChoosed", (info) => {
-    if (info) {
-      io.to(info.partida).emit("getQuestionChoosed", numQuestion);
-    }
-  });
-
-  socket.on("getNameQuestion", (info) => {
-    if (info) {
-      const partida = info.partida;
-      io.to(partida).emit("getTheNameRandom", nameRandom);
     }
   });
 
@@ -177,10 +149,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("resultQ", (info) => {
-    console.log("info", info);
-    console.log("resultQ", resultQ);
     if (info) {
-      console.log("entramos wey");
       io.to(info.partida).emit("getResultQ", resultQ);
     }
   });
@@ -202,54 +171,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("resultQuestion", (info) => {
-    if (info) {
-      const result = Object.values(rooms[info.partida].players);
-      io.to(info.partida).emit("getResultQuestion", result);
-    }
-  });
-
   socket.on("playerWinner", (info) => {
     if (info) {
       const player = rooms[info.partida].players[socket.id];
-      console.log("player", player);
       rooms[info.partida].players[socket.id] = {
         ...player,
         puntos: player.puntos + 100,
       };
-    }
-  });
-
-  socket.on("getGame", (info) => {
-    if (info) {
-      io.to(info.partida).emit("getGameData", rooms[info.partida]);
-    }
-  });
-
-  socket.on("getCurrentResult", (info) => {
-    if (info) {
-      const partida = info.partida;
-      const preguntaId = info.preguntaId;
-      console.log("preguntaId", preguntaId);
-      console.log("rooms[partida]", rooms[partida]);
-
-      if (
-        rooms[partida] &&
-        rooms[partida].lastResults &&
-        rooms[partida].lastResults[preguntaId]
-      ) {
-        socket.emit(
-          "allPlayersAnswered",
-          rooms[partida].lastResults[preguntaId]
-        );
-      } else if (rooms[partida] && rooms[partida].lastResults) {
-        // Enviar el último resultado disponible si no se encuentra el exacto
-        const allIds = Object.keys(rooms[partida].lastResults);
-        if (allIds.length > 0) {
-          const lastId = allIds[allIds.length - 1];
-          socket.emit("allPlayersAnswered", rooms[partida].lastResults[lastId]);
-        }
-      }
     }
   });
 
