@@ -30,20 +30,20 @@ const Room = () => {
       setFinish(true);
     }
     socket.emit("getNQuestion", { partida });
-    socket.emit("getQuestionsList", { partida});
- 
+    socket.emit("getQuestionsList", { partida });
+
     const getQuestionsList = (questions: any) => {
       setIndexQuestion(questions.numRandom);
       setQuestionsList(questions.questionsList);
     };
 
     socket.on("getQuestionsList", getQuestionsList);
-    
+
     return () => {
       socket.off("getQuestionsList", getQuestionsList);
     };
   }, []);
-  
+
   useEffect(() => {
     if (response) {
       sendResponse(response);
@@ -62,7 +62,7 @@ const Room = () => {
 
   useEffect(() => {
     if (players && players.length > 0) {
-      getTheNameRandom()
+      getTheNameRandom();
     }
   }, [players]);
 
@@ -76,10 +76,10 @@ const Room = () => {
     dispatch(setCurrentIndex(indexQuestion));
   }, [indexQuestion, dispatch]);
 
-  const getTheNameRandom = async() => {
+  const getTheNameRandom = async () => {
     const nameRandom = await getNameRandom(players);
-      socket.emit("nameRandom", { partida, nameRandom });
-  }
+    socket.emit("nameRandom", { partida, nameRandom });
+  };
 
   const sendResponse = (resp: any) => {
     if (resp) {
@@ -103,8 +103,7 @@ const Room = () => {
       preguntaId: indexQuestion || 0,
       respuesta: resp,
     };
-    console.log('respuesta', respuesta);
-    // socket.emit("saveLastResp", { partida, respuesta });
+    console.log("respuesta", respuesta);
     socket.emit("saveResp", { partida, respuesta });
     setIsQuestionResp(false);
   };
@@ -115,42 +114,42 @@ const Room = () => {
       jugador: user,
       respuesta: resp,
     };
-    
+
     socket.emit("saveQuestionResp", { partida, respuesta });
   };
 
   const onIsResp = (resp: boolean) => {
-    if(resp) setTime(30);
-  }
+    if (resp) setTime(30);
+  };
   return (
     <>
-    {!isQuestionResp ? (
-      <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
-        <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
-        <Questions
-          onResponse={setResponse}
-          questionsList={questionsList}
-          numRandom={indexQuestion}
-          questionId={indexQuestion}
-          isQuestionResp={isQuestionResp}
-          onIsResp={onIsResp}
-          onGoResult={setIsGoResult}
-        />
-      </div>
-   ) : (
-    <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
-        <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
-        <Questions
-          onResponse={setResponse}
-          questionsList={questionsList}
-          numRandom={indexQuestion}
-          questionId={indexQuestion}
-          isQuestionResp={isQuestionResp}
-          onIsResp={onIsResp} 
-          onGoResult={setIsGoResult}
-        />
-      </div>
-  )}
+      {!isQuestionResp ? (
+        <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
+          <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
+          <Questions
+            onResponse={setResponse}
+            questionsList={questionsList}
+            numRandom={indexQuestion}
+            questionId={indexQuestion}
+            isQuestionResp={isQuestionResp}
+            onIsResp={onIsResp}
+            onGoResult={setIsGoResult}
+          />
+        </div>
+      ) : (
+        <div className="w-full flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
+          <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
+          <Questions
+            onResponse={setResponse}
+            questionsList={questionsList}
+            numRandom={indexQuestion}
+            questionId={indexQuestion}
+            isQuestionResp={isQuestionResp}
+            onIsResp={onIsResp}
+            onGoResult={setIsGoResult}
+          />
+        </div>
+      )}
     </>
   );
 };

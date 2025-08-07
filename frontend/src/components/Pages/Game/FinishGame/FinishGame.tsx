@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-// import { playersService } from "../../../../services/allService";
 import { useParams } from "react-router-dom";
 import CardPlayer from "../../../commons/CardPlayer";
 import Winner from "./Winner";
-// import { ordenarMayorMenor } from "../../../Utils";
 
 import socket from "../../../../utils/socket";
 
