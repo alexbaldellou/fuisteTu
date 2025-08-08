@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { addUser } from "../../../redux/userSlice";
 import { Avatars } from "./Avatars";
 import { useParams } from "react-router-dom";
+import monster3 from "../../../assets/players/monster_morado.png";
 
 interface LoginPlayerInter {
   onChangePlayer?: (pl: JugadorInterface) => void;
@@ -22,7 +23,7 @@ export const RegisterPlayer = (props: LoginPlayerInter) => {
   );
   const [hideButton, setHideButton] = useState<boolean>(false);
   const [nombreJugador, setNombreJugador] = useState<string>("");
-  const [avatar, setAvatar] = useState<any>();
+  const [avatar, setAvatar] = useState<any>(monster3);
   const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {

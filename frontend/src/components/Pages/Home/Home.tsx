@@ -97,7 +97,7 @@ const Home = () => {
   };
 
   return (
-    <div className="pt-48 md:pt-0 md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500 flex justify-center items-center flex-col">
+    <div className="pt-48 md:pt-0 md:h-dvh bg-gradient-to-tr from-pink-500 to-yellow-500 flex justify-center items-center flex-col">
       <div className="w-5/6 md:flex md:flex-row md:w-3/6">
         <div className="md:mx-0 md:w-1/2">
           <RegisterPlayer
