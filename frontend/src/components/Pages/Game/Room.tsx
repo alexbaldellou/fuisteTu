@@ -7,6 +7,7 @@ import { getNameRandom } from "../../Utils";
 import socket from "../../../utils/socket";
 import { useDispatch, useSelector } from "react-redux";
 import { addQuestions } from "../../../redux/questionsList";
+import { ResumePoints } from "./ResumePoints/ResumePoints";
 
 const Room = () => {
   const { partida } = useParams();
@@ -118,9 +119,9 @@ const Room = () => {
     if (resp) setTime(30);
   };
   return (
-    <>
+    <div className="w-full min-h-screen flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
       {!isQuestionResp ? (
-        <div className="w-full min-h-screen flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
+        <>
           <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
           <Questions
             onResponse={setResponse}
@@ -131,9 +132,9 @@ const Room = () => {
             onIsResp={onIsResp}
             onGoResult={setIsGoResult}
           />
-        </div>
+        </>
       ) : (
-        <div className="w-full min-h-screen flex justify-center items-center flex-col md:h-dvh py-14 bg-gradient-to-tr from-pink-500 to-yellow-500">
+        <>
           <CountDown key={time} seconds={time} onTimeOut={setTimeOut} />
           <Questions
             onResponse={setResponse}
@@ -144,9 +145,10 @@ const Room = () => {
             onIsResp={onIsResp}
             onGoResult={setIsGoResult}
           />
-        </div>
+        </>
       )}
-    </>
+      <ResumePoints />
+    </div>
   );
 };
 
